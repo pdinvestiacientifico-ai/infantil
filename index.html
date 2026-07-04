@@ -53,14 +53,14 @@
         /* ESCENARIO FIJO DE DOS NIÑOS */
         .stage {
             display: flex;
-            gap: 80px;
+            gap: 120px; /* Un poco más de espacio para las manos exteriores */
             align-items: center;
             justify-content: center;
             z-index: 5;
             height: 500px;
         }
 
-        /* DISEÑO BASE DEL NIÑO / NIÑA (¡DOBLE DE TAMAÑO!) */
+        /* DISEÑO BASE DEL NIÑO / NIÑA */
         .child {
             width: 340px;
             height: 340px;
@@ -78,7 +78,7 @@
         .boy { background: #fbcfe8; }
         .girl { background: #fed7aa; }
 
-        /* CABELLO NIÑO EL DOBLE */
+        /* CABELLO NIÑO */
         .boy .hair {
             position: absolute;
             top: -20px;
@@ -98,7 +98,7 @@
             filter: drop-shadow(60px 0 0 #7c2d12) drop-shadow(120px 0 0 #7c2d12) drop-shadow(180px 0 0 #7c2d12);
         }
 
-        /* CABELLO NIÑA EL DOBLE */
+        /* CABELLO NIÑA */
         .girl .hair {
             position: absolute;
             top: -20px;
@@ -127,7 +127,7 @@
         .girl .bow::before { left: -18px; transform: rotate(-20deg); }
         .girl .bow::after { right: -18px; transform: rotate(20deg); }
 
-        /* OJOS GIGANTES PROPORCIONALES */
+        /* OJOS GIGANTES */
         .eyes-container {
             display: flex;
             gap: 64px;
@@ -152,7 +152,7 @@
             border-radius: 50%;
         }
 
-        /* BOCA PROPORCIONAL */
+        /* BOCA */
         .mouth {
             width: 110px;
             height: 52px;
@@ -162,7 +162,7 @@
             z-index: 6;
         }
 
-        /* LÁGRIMAS GRANDES */
+        /* LÁGRIMAS */
         .teardrop-container {
             position: absolute;
             width: 100%; height: 100%; top: 0; left: 0;
@@ -179,7 +179,7 @@
         .t1 { left: 80px; top: 190px; }
         .t2 { right: 80px; top: 190px; animation-delay: 0.4s; }
 
-        /* EFECTO Zzz GIGANTE */
+        /* EFECTO Zzz */
         .zzz {
             position: absolute;
             top: -30px; right: -10px;
@@ -188,18 +188,21 @@
             transition: opacity 0.3s; z-index: 8;
         }
 
-        /* MANO PARA SALUDAR GRANDE */
-        .hand-wave {
+        /* SISTEMA DE DOS MANOS (Izquierda y Derecha) */
+        .hand {
             position: absolute;
-            bottom: 30px; right: -24px;
-            width: 64px; height: 64px;
-            background: #fbcfe8;
+            width: 64px;
+            height: 64px;
             border-radius: 50%;
-            display: none;
             z-index: 6;
-            box-shadow: -4px 8px 20px rgba(0,0,0,0.1);
+            transition: all 0.4s ease;
         }
-        .girl .hand-wave { background: #fed7aa; }
+        .boy .hand { background: #fbcfe8; box-shadow: 0 8px 15px rgba(0,0,0,0.08); }
+        .girl .hand { background: #fed7aa; box-shadow: 0 8px 15px rgba(0,0,0,0.08); }
+
+        /* Posición estática en reposo */
+        .hand-left { bottom: 25px; left: -20px; }
+        .hand-right { bottom: 25px; right: -20px; }
 
         /* ================= ESTADOS DE ANIMACIÓN ================= */
 
@@ -209,6 +212,7 @@
         body.sleep-mode .eye::after { opacity: 0; }
         body.sleep-mode .mouth { width: 36px; height: 24px; border-radius: 50%; }
         body.sleep-mode .zzz { opacity: 1; animation: zzz-float 2s infinite ease-in-out; }
+        body.sleep-mode .hand { bottom: 15px; } /* Manitas relajadas abajo */
 
         /* [B] LLORAR */
         body.sad-mode { background: linear-gradient(to bottom, #475569, #334155); }
@@ -217,17 +221,21 @@
         body.sad-mode .eye::after { opacity: 0; }
         body.sad-mode .mouth { width: 90px; height: 36px; border-radius: 90px 90px 0 0; transform: translateY(8px); }
         body.sad-mode .teardrop-container { display: block; }
+        body.sad-mode .hand { bottom: 40px; transform: scale(0.9); } /* Manitas encogidas de tristeza */
 
         /* [A] ALEGRE */
         body.happy-mode { background: linear-gradient(to bottom, #f0fdf4, #bbf7d0); }
         body.happy-mode .child { animation: jump-victory 0.5s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         body.happy-mode .mouth { width: 120px; height: 64px; }
+        body.happy-mode .hand { bottom: 80px; } /* Manos arriba celebrando */
 
-        /* [H / J] SALUDANDO */
+        /* [H / J] SALUDANDO (Estado Inicial) */
         body.greet-mode { background: linear-gradient(to bottom, #fef08a, #fef9c3); }
         body.greet-mode .child { animation: wave-body 0.6s infinite alternate ease-in-out; }
         body.greet-mode .mouth { width: 110px; height: 60px; border-radius: 0 0 110px 110px; }
-        body.greet-mode .hand-wave { display: block; animation: wave-hand 0.3s infinite alternate ease-in-out; }
+        /* Las dos manos cobran vida y saludan de forma intercalada */
+        body.greet-mode .hand-left { animation: wave-hand-left 0.3s infinite alternate ease-in-out; }
+        body.greet-mode .hand-right { animation: wave-hand-right 0.3s infinite alternate ease-in-out; animation-delay: 0.15s; }
 
         /* ================= ANIMACIONES GLOBALES ================= */
         @keyframes gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
@@ -236,7 +244,10 @@
         @keyframes zzz-float { 0% { transform: translate(0,0) scale(0.6); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(40px, -70px) scale(1.1); opacity: 0; } }
         @keyframes drop-fall { 0% { transform: translateY(0) rotate(45deg) scale(0.5); opacity: 1; } 100% { transform: translateY(120px) rotate(45deg) scale(1); opacity: 0; } }
         @keyframes wave-body { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
-        @keyframes wave-hand { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(-16px, -24px) rotate(-40deg); } }
+        
+        /* Movimiento alegre de las dos manos */
+        @keyframes wave-hand-left { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(12px, -20px) rotate(35deg); } }
+        @keyframes wave-hand-right { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(-12px, -20px) rotate(-35deg); } }
 
         /* Controles ocultos abajo */
         .controls { position: absolute; bottom: 15px; display: flex; gap: 8px; z-index: 20; opacity: 0.05; transition: opacity 0.3s; }
@@ -244,7 +255,7 @@
         .controls button { padding: 5px 10px; font-size: 0.8rem; border: none; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
-<body>
+<body class="greet-mode"> <!-- Inicia directamente saludando -->
 
     <div class="cloud c1"></div>
     <div class="cloud c2"></div>
@@ -256,7 +267,8 @@
             <div class="eyes-container"><div class="eye"></div><div class="eye"></div></div>
             <div class="mouth"></div>
             <div class="zzz">Zzz</div>
-            <div class="hand-wave"></div>
+            <div class="hand hand-left"></div>
+            <div class="hand hand-right"></div>
             <div class="teardrop-container"><div class="teardrop t1"></div><div class="teardrop t2"></div></div>
         </div>
 
@@ -266,7 +278,8 @@
             <div class="eyes-container"><div class="eye"></div><div class="eye"></div></div>
             <div class="mouth"></div>
             <div class="zzz">Zzz</div>
-            <div class="hand-wave"></div>
+            <div class="hand hand-left"></div>
+            <div class="hand hand-right"></div>
             <div class="teardrop-container"><div class="teardrop t1"></div><div class="teardrop t2"></div></div>
         </div>
     </div>
