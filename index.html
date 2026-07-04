@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historia Interactive Infantil</title>
+    <title>Historia Interactiva Infantil</title>
     <style>
         * {
             box-sizing: border-box;
@@ -53,24 +53,24 @@
         /* ESCENARIO FIJO DE DOS NIÑOS */
         .stage {
             display: flex;
-            gap: 50px;
+            gap: 80px;
             align-items: center;
             justify-content: center;
             z-index: 5;
-            height: 300px;
+            height: 500px;
         }
 
-        /* DISEÑO BASE DEL NIÑO / NIÑA */
+        /* DISEÑO BASE DEL NIÑO / NIÑA (¡DOBLE DE TAMAÑO!) */
         .child {
-            width: 170px;
-            height: 170px;
+            width: 340px;
+            height: 340px;
             border-radius: 50%;
             position: relative;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.1), inset -6px -6px 12px rgba(0,0,0,0.1);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.1), inset -12px -12px 24px rgba(0,0,0,0.1);
             transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             animation: gentle-float 4s ease-in-out infinite;
         }
@@ -78,66 +78,66 @@
         .boy { background: #fbcfe8; }
         .girl { background: #fed7aa; }
 
-        /* CABELLO NIÑO */
+        /* CABELLO NIÑO EL DOBLE */
         .boy .hair {
             position: absolute;
-            top: -10px;
-            width: 180px;
-            height: 60px;
+            top: -20px;
+            width: 360px;
+            height: 120px;
             background: #7c2d12;
-            border-radius: 100px 100px 20px 20px;
+            border-radius: 200px 200px 40px 40px;
             z-index: 3;
         }
         .boy .hair-fringe {
             position: absolute;
-            top: 42px; left: 20px;
+            top: 84px; left: 40px;
             width: 0; height: 0;
-            border-left: 14px solid transparent;
-            border-right: 14px solid transparent;
-            border-top: 18px solid #7c2d12;
-            filter: drop-shadow(30px 0 0 #7c2d12) drop-shadow(60px 0 0 #7c2d12);
+            border-left: 28px solid transparent;
+            border-right: 28px solid transparent;
+            border-top: 36px solid #7c2d12;
+            filter: drop-shadow(60px 0 0 #7c2d12) drop-shadow(120px 0 0 #7c2d12) drop-shadow(180px 0 0 #7c2d12);
         }
 
-        /* CABELLO NIÑA (Corto Oscuro + Moño Rojizo) */
+        /* CABELLO NIÑA EL DOBLE */
         .girl .hair {
             position: absolute;
-            top: -10px;
-            width: 180px;
-            height: 55px;
+            top: -20px;
+            width: 360px;
+            height: 110px;
             background: #1e293b;
-            border-radius: 100px 100px 15px 15px;
+            border-radius: 200px 200px 30px 30px;
             z-index: 3;
         }
         .girl .bow {
             position: absolute;
-            top: -18px;
-            left: 70px;
-            width: 36px;
-            height: 20px;
+            top: -36px;
+            left: 140px;
+            width: 72px;
+            height: 40px;
             background: #dc2626;
-            border-radius: 5px;
+            border-radius: 10px;
             z-index: 4;
         }
         .girl .bow::before, .girl .bow::after {
             content: '';
             position: absolute;
-            top: -3px; width: 15px; height: 26px;
+            top: -6px; width: 30px; height: 52px;
             background: #b91c1c; border-radius: 50%;
         }
-        .girl .bow::before { left: -9px; transform: rotate(-20deg); }
-        .girl .bow::after { right: -9px; transform: rotate(20deg); }
+        .girl .bow::before { left: -18px; transform: rotate(-20deg); }
+        .girl .bow::after { right: -18px; transform: rotate(20deg); }
 
-        /* OJOS GIGANTES */
+        /* OJOS GIGANTES PROPORCIONALES */
         .eyes-container {
             display: flex;
-            gap: 32px;
-            margin-top: 35px;
-            margin-bottom: 10px;
+            gap: 64px;
+            margin-top: 70px;
+            margin-bottom: 20px;
             z-index: 6;
         }
         .eye {
-            width: 30px;
-            height: 30px;
+            width: 60px;
+            height: 60px;
             background: #0f172a;
             border-radius: 50%;
             position: relative;
@@ -146,23 +146,23 @@
         .eye::after {
             content: '';
             position: absolute;
-            top: 4px; left: 5px;
-            width: 10px; height: 10px;
+            top: 8px; left: 10px;
+            width: 20px; height: 20px;
             background: white;
             border-radius: 50%;
         }
 
-        /* BOCA */
+        /* BOCA PROPORCIONAL */
         .mouth {
-            width: 55px;
-            height: 26px;
+            width: 110px;
+            height: 52px;
             background: #451a03;
-            border-radius: 0 0 55px 55px;
+            border-radius: 0 0 110px 110px;
             transition: all 0.4s ease;
             z-index: 6;
         }
 
-        /* LÁGRIMAS */
+        /* LÁGRIMAS GRANDES */
         .teardrop-container {
             position: absolute;
             width: 100%; height: 100%; top: 0; left: 0;
@@ -170,34 +170,34 @@
         }
         .teardrop {
             position: absolute;
-            width: 12px; height: 12px;
+            width: 24px; height: 24px;
             background: #38bdf8;
             border-radius: 0 50% 50% 50%;
             transform: rotate(45deg);
             animation: drop-fall 1s infinite linear;
         }
-        .t1 { left: 40px; top: 95px; }
-        .t2 { right: 40px; top: 95px; animation-delay: 0.4s; }
+        .t1 { left: 80px; top: 190px; }
+        .t2 { right: 80px; top: 190px; animation-delay: 0.4s; }
 
-        /* EFECTO Zzz */
+        /* EFECTO Zzz GIGANTE */
         .zzz {
             position: absolute;
-            top: -15px; right: -5px;
-            font-size: 1.8rem; font-weight: bold;
+            top: -30px; right: -10px;
+            font-size: 3.5rem; font-weight: bold;
             color: #818cf8; opacity: 0;
             transition: opacity 0.3s; z-index: 8;
         }
 
-        /* MANO PARA SALUDAR */
+        /* MANO PARA SALUDAR GRANDE */
         .hand-wave {
             position: absolute;
-            bottom: 15px; right: -12px;
-            width: 32px; height: 32px;
+            bottom: 30px; right: -24px;
+            width: 64px; height: 64px;
             background: #fbcfe8;
             border-radius: 50%;
             display: none;
             z-index: 6;
-            box-shadow: -2px 4px 10px rgba(0,0,0,0.1);
+            box-shadow: -4px 8px 20px rgba(0,0,0,0.1);
         }
         .girl .hand-wave { background: #fed7aa; }
 
@@ -205,40 +205,40 @@
 
         /* [S] DORMIR */
         body.sleep-mode { background: linear-gradient(to bottom, #1e1b4b, #312e81); }
-        body.sleep-mode .eye { height: 6px; border-radius: 0 0 30px 30px; background: #451a03; }
+        body.sleep-mode .eye { height: 12px; border-radius: 0 0 60px 60px; background: #451a03; }
         body.sleep-mode .eye::after { opacity: 0; }
-        body.sleep-mode .mouth { width: 18px; height: 12px; border-radius: 50%; }
+        body.sleep-mode .mouth { width: 36px; height: 24px; border-radius: 50%; }
         body.sleep-mode .zzz { opacity: 1; animation: zzz-float 2s infinite ease-in-out; }
 
         /* [B] LLORAR */
         body.sad-mode { background: linear-gradient(to bottom, #475569, #334155); }
         body.sad-mode .child { animation: shiver 0.15s infinite; }
-        body.sad-mode .eye { height: 10px; border-radius: 30px 30px 0 0; }
+        body.sad-mode .eye { height: 20px; border-radius: 60px 60px 0 0; }
         body.sad-mode .eye::after { opacity: 0; }
-        body.sad-mode .mouth { width: 45px; height: 18px; border-radius: 45px 45px 0 0; transform: translateY(4px); }
+        body.sad-mode .mouth { width: 90px; height: 36px; border-radius: 90px 90px 0 0; transform: translateY(8px); }
         body.sad-mode .teardrop-container { display: block; }
 
         /* [A] ALEGRE */
         body.happy-mode { background: linear-gradient(to bottom, #f0fdf4, #bbf7d0); }
         body.happy-mode .child { animation: jump-victory 0.5s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        body.happy-mode .mouth { width: 60px; height: 32px; }
+        body.happy-mode .mouth { width: 120px; height: 64px; }
 
         /* [H / J] SALUDANDO */
         body.greet-mode { background: linear-gradient(to bottom, #fef08a, #fef9c3); }
         body.greet-mode .child { animation: wave-body 0.6s infinite alternate ease-in-out; }
-        body.greet-mode .mouth { width: 55px; height: 30px; border-radius: 0 0 55px 55px; }
+        body.greet-mode .mouth { width: 110px; height: 60px; border-radius: 0 0 110px 110px; }
         body.greet-mode .hand-wave { display: block; animation: wave-hand 0.3s infinite alternate ease-in-out; }
 
         /* ================= ANIMACIONES GLOBALES ================= */
-        @keyframes gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
-        @keyframes shiver { 0% { transform: translate(1px, 1px); } 100% { transform: translate(-1px, -1px); } }
-        @keyframes jump-victory { 0% { transform: translateY(0); } 100% { transform: translateY(-35px); } }
-        @keyframes zzz-float { 0% { transform: translate(0,0) scale(0.6); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(20px, -35px) scale(1.1); opacity: 0; } }
-        @keyframes drop-fall { 0% { transform: translateY(0) rotate(45deg) scale(0.5); opacity: 1; } 100% { transform: translateY(70px) rotate(45deg) scale(1); opacity: 0; } }
+        @keyframes gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-20px); } }
+        @keyframes shiver { 0% { transform: translate(2px, 2px); } 100% { transform: translate(-2px, -2px); } }
+        @keyframes jump-victory { 0% { transform: translateY(0); } 100% { transform: translateY(-70px); } }
+        @keyframes zzz-float { 0% { transform: translate(0,0) scale(0.6); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(40px, -70px) scale(1.1); opacity: 0; } }
+        @keyframes drop-fall { 0% { transform: translateY(0) rotate(45deg) scale(0.5); opacity: 1; } 100% { transform: translateY(120px) rotate(45deg) scale(1); opacity: 0; } }
         @keyframes wave-body { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
-        @keyframes wave-hand { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(-8px, -12px) rotate(-40deg); } }
+        @keyframes wave-hand { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(-16px, -24px) rotate(-40deg); } }
 
-        /* Controles ocultos abajo para soporte táctil */
+        /* Controles ocultos abajo */
         .controls { position: absolute; bottom: 15px; display: flex; gap: 8px; z-index: 20; opacity: 0.05; transition: opacity 0.3s; }
         .controls:hover { opacity: 1; }
         .controls button { padding: 5px 10px; font-size: 0.8rem; border: none; border-radius: 10px; cursor: pointer; }
@@ -271,7 +271,7 @@
         </div>
     </div>
 
-    <!-- Mini botones invisibles abajo -->
+    <!-- Mini botones ocultos abajo -->
     <div class="controls">
         <button onclick="changeState('s')">S</button>
         <button onclick="changeState('b')">B</button>
