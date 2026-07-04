@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Historia Interactiva Infantil</title>
+    <title>Historia Interactive Infantil</title>
     <style>
         * {
             box-sizing: border-box;
@@ -50,34 +50,22 @@
             100% { left: 105vw; }
         }
 
-        /* CONTENEDOR EN CÍRCULO (RONDA MÁGICA) */
+        /* ESCENARIO FIJO DE DOS NIÑOS */
         .stage {
-            position: relative;
-            width: 500px;
-            height: 500px;
             display: flex;
+            gap: 50px;
             align-items: center;
             justify-content: center;
             z-index: 5;
-            transition: all 0.5s ease;
-        }
-
-        /* Clase dinámica para activar el giro cuando juegan a la ronda */
-        .circle-playing {
-            animation: spin-ronda 12s infinite linear;
-        }
-
-        @keyframes spin-ronda {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            height: 300px;
         }
 
         /* DISEÑO BASE DEL NIÑO / NIÑA */
         .child {
-            width: 130px;
-            height: 130px;
+            width: 170px;
+            height: 170px;
             border-radius: 50%;
-            position: absolute; /* Permite posicionamiento matemático en círculo */
+            position: relative;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -90,61 +78,42 @@
         .boy { background: #fbcfe8; }
         .girl { background: #fed7aa; }
 
-        /* Para que los rostros no giren de cabeza cuando la ronda da vueltas */
-        .child-inner {
-            width: 100%;
-            height: 100%;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            animation: inherit;
-        }
-        .circle-playing .child-inner {
-            animation: counter-spin-ronda 12s infinite linear;
-        }
-        @keyframes counter-spin-ronda {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(-360deg); }
-        }
-
         /* CABELLO NIÑO */
         .boy .hair {
             position: absolute;
-            top: -8px;
-            width: 140px;
-            height: 50px;
+            top: -10px;
+            width: 180px;
+            height: 60px;
             background: #7c2d12;
             border-radius: 100px 100px 20px 20px;
             z-index: 3;
         }
         .boy .hair-fringe {
             position: absolute;
-            top: 35px; left: 15px;
+            top: 42px; left: 20px;
             width: 0; height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 15px solid #7c2d12;
-            filter: drop-shadow(25px 0 0 #7c2d12) drop-shadow(50px 0 0 #7c2d12);
+            border-left: 14px solid transparent;
+            border-right: 14px solid transparent;
+            border-top: 18px solid #7c2d12;
+            filter: drop-shadow(30px 0 0 #7c2d12) drop-shadow(60px 0 0 #7c2d12);
         }
 
-        /* CABELLO NIÑA CORRECCIONAL (Corto Oscuro + Moño Rojizo) */
+        /* CABELLO NIÑA (Corto Oscuro + Moño Rojizo) */
         .girl .hair {
             position: absolute;
-            top: -8px;
-            width: 140px;
-            height: 45px;
+            top: -10px;
+            width: 180px;
+            height: 55px;
             background: #1e293b;
             border-radius: 100px 100px 15px 15px;
             z-index: 3;
         }
         .girl .bow {
             position: absolute;
-            top: -16px;
-            left: 50px;
-            width: 32px;
-            height: 18px;
+            top: -18px;
+            left: 70px;
+            width: 36px;
+            height: 20px;
             background: #dc2626;
             border-radius: 5px;
             z-index: 4;
@@ -152,23 +121,23 @@
         .girl .bow::before, .girl .bow::after {
             content: '';
             position: absolute;
-            top: -3px; width: 14px; height: 24px;
+            top: -3px; width: 15px; height: 26px;
             background: #b91c1c; border-radius: 50%;
         }
-        .girl .bow::before { left: -8px; transform: rotate(-20deg); }
-        .girl .bow::after { right: -8px; transform: rotate(20deg); }
+        .girl .bow::before { left: -9px; transform: rotate(-20deg); }
+        .girl .bow::after { right: -9px; transform: rotate(20deg); }
 
         /* OJOS GIGANTES */
         .eyes-container {
             display: flex;
-            gap: 24px;
-            margin-top: 25px;
-            margin-bottom: 8px;
+            gap: 32px;
+            margin-top: 35px;
+            margin-bottom: 10px;
             z-index: 6;
         }
         .eye {
-            width: 26px;
-            height: 26px;
+            width: 30px;
+            height: 30px;
             background: #0f172a;
             border-radius: 50%;
             position: relative;
@@ -177,18 +146,18 @@
         .eye::after {
             content: '';
             position: absolute;
-            top: 3px; left: 4px;
-            width: 9px; height: 9px;
+            top: 4px; left: 5px;
+            width: 10px; height: 10px;
             background: white;
             border-radius: 50%;
         }
 
         /* BOCA */
         .mouth {
-            width: 45px;
-            height: 22px;
+            width: 55px;
+            height: 26px;
             background: #451a03;
-            border-radius: 0 0 45px 45px;
+            border-radius: 0 0 55px 55px;
             transition: all 0.4s ease;
             z-index: 6;
         }
@@ -201,20 +170,20 @@
         }
         .teardrop {
             position: absolute;
-            width: 10px; height: 10px;
+            width: 12px; height: 12px;
             background: #38bdf8;
             border-radius: 0 50% 50% 50%;
             transform: rotate(45deg);
             animation: drop-fall 1s infinite linear;
         }
-        .t1 { left: 30px; top: 75px; }
-        .t2 { right: 30px; top: 75px; animation-delay: 0.4s; }
+        .t1 { left: 40px; top: 95px; }
+        .t2 { right: 40px; top: 95px; animation-delay: 0.4s; }
 
         /* EFECTO Zzz */
         .zzz {
             position: absolute;
-            top: -10px; right: -5px;
-            font-size: 1.6rem; font-weight: bold;
+            top: -15px; right: -5px;
+            font-size: 1.8rem; font-weight: bold;
             color: #818cf8; opacity: 0;
             transition: opacity 0.3s; z-index: 8;
         }
@@ -222,149 +191,103 @@
         /* MANO PARA SALUDAR */
         .hand-wave {
             position: absolute;
-            bottom: 10px; right: -10px;
-            width: 28px; height: 28px;
+            bottom: 15px; right: -12px;
+            width: 32px; height: 32px;
             background: #fbcfe8;
             border-radius: 50%;
             display: none;
             z-index: 6;
+            box-shadow: -2px 4px 10px rgba(0,0,0,0.1);
         }
         .girl .hand-wave { background: #fed7aa; }
 
-        /* ================= ESTADOS VISUALES DE ANIMACIÓN ================= */
+        /* ================= ESTADOS DE ANIMACIÓN ================= */
 
         /* [S] DORMIR */
         body.sleep-mode { background: linear-gradient(to bottom, #1e1b4b, #312e81); }
-        body.sleep-mode .eye { height: 5px; border-radius: 0 0 26px 26px; background: #451a03; }
+        body.sleep-mode .eye { height: 6px; border-radius: 0 0 30px 30px; background: #451a03; }
         body.sleep-mode .eye::after { opacity: 0; }
-        body.sleep-mode .mouth { width: 15px; height: 10px; border-radius: 50%; }
+        body.sleep-mode .mouth { width: 18px; height: 12px; border-radius: 50%; }
         body.sleep-mode .zzz { opacity: 1; animation: zzz-float 2s infinite ease-in-out; }
 
         /* [B] LLORAR */
         body.sad-mode { background: linear-gradient(to bottom, #475569, #334155); }
         body.sad-mode .child { animation: shiver 0.15s infinite; }
-        body.sad-mode .eye { height: 8px; border-radius: 26px 26px 0 0; }
+        body.sad-mode .eye { height: 10px; border-radius: 30px 30px 0 0; }
         body.sad-mode .eye::after { opacity: 0; }
-        body.sad-mode .mouth { width: 40px; height: 15px; border-radius: 40px 40px 0 0; transform: translateY(4px); }
+        body.sad-mode .mouth { width: 45px; height: 18px; border-radius: 45px 45px 0 0; transform: translateY(4px); }
         body.sad-mode .teardrop-container { display: block; }
 
         /* [A] ALEGRE */
         body.happy-mode { background: linear-gradient(to bottom, #f0fdf4, #bbf7d0); }
         body.happy-mode .child { animation: jump-victory 0.5s infinite alternate cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        body.happy-mode .mouth { width: 50px; height: 30px; }
+        body.happy-mode .mouth { width: 60px; height: 32px; }
 
         /* [H / J] SALUDANDO */
         body.greet-mode { background: linear-gradient(to bottom, #fef08a, #fef9c3); }
         body.greet-mode .child { animation: wave-body 0.6s infinite alternate ease-in-out; }
+        body.greet-mode .mouth { width: 55px; height: 30px; border-radius: 0 0 55px 55px; }
         body.greet-mode .hand-wave { display: block; animation: wave-hand 0.3s infinite alternate ease-in-out; }
 
-        /* ================= ANIMACIONES GLOBAES ================= */
-        @keyframes gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        /* ================= ANIMACIONES GLOBALES ================= */
+        @keyframes gentle-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         @keyframes shiver { 0% { transform: translate(1px, 1px); } 100% { transform: translate(-1px, -1px); } }
-        @keyframes jump-victory { 0% { transform: translateY(0); } 100% { transform: translateY(-30px); } }
-        @keyframes zzz-float { 0% { transform: translate(0,0) scale(0.6); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(20px, -30px) scale(1.1); opacity: 0; } }
-        @keyframes drop-fall { 0% { transform: translateY(0) rotate(45deg) scale(0.5); opacity: 1; } 100% { transform: translateY(60px) rotate(45deg) scale(1); opacity: 0; } }
-        @keyframes wave-body { 0% { transform: rotate(-4deg); } 100% { transform: rotate(4deg); } }
+        @keyframes jump-victory { 0% { transform: translateY(0); } 100% { transform: translateY(-35px); } }
+        @keyframes zzz-float { 0% { transform: translate(0,0) scale(0.6); opacity: 0; } 50% { opacity: 1; } 100% { transform: translate(20px, -35px) scale(1.1); opacity: 0; } }
+        @keyframes drop-fall { 0% { transform: translateY(0) rotate(45deg) scale(0.5); opacity: 1; } 100% { transform: translateY(70px) rotate(45deg) scale(1); opacity: 0; } }
+        @keyframes wave-body { 0% { transform: rotate(-5deg); } 100% { transform: rotate(5deg); } }
         @keyframes wave-hand { 0% { transform: translate(0, 0) rotate(0deg); } 100% { transform: translate(-8px, -12px) rotate(-40deg); } }
+
+        /* Controles ocultos abajo para soporte táctil */
+        .controls { position: absolute; bottom: 15px; display: flex; gap: 8px; z-index: 20; opacity: 0.05; transition: opacity 0.3s; }
+        .controls:hover { opacity: 1; }
+        .controls button { padding: 5px 10px; font-size: 0.8rem; border: none; border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <!-- Escenario interactivo central sin letras -->
-    <div class="stage" id="stage"></div>
+    <div class="cloud c1"></div>
+    <div class="cloud c2"></div>
+
+    <div class="stage">
+        <!-- NIÑO -->
+        <div class="child boy">
+            <div class="hair"><div class="hair-fringe"></div></div>
+            <div class="eyes-container"><div class="eye"></div><div class="eye"></div></div>
+            <div class="mouth"></div>
+            <div class="zzz">Zzz</div>
+            <div class="hand-wave"></div>
+            <div class="teardrop-container"><div class="teardrop t1"></div><div class="teardrop t2"></div></div>
+        </div>
+
+        <!-- NIÑA -->
+        <div class="child girl">
+            <div class="hair"><div class="bow"></div></div>
+            <div class="eyes-container"><div class="eye"></div><div class="eye"></div></div>
+            <div class="mouth"></div>
+            <div class="zzz">Zzz</div>
+            <div class="hand-wave"></div>
+            <div class="teardrop-container"><div class="teardrop t1"></div><div class="teardrop t2"></div></div>
+        </div>
+    </div>
+
+    <!-- Mini botones invisibles abajo -->
+    <div class="controls">
+        <button onclick="changeState('s')">S</button>
+        <button onclick="changeState('b')">B</button>
+        <button onclick="changeState('a')">A</button>
+        <button onclick="changeState('h')">H</button>
+    </div>
 
     <script>
-        const stage = document.getElementById('stage');
         const body = document.body;
-        let currentChildrenCount = 2; // Inicia con dos niños
-
-        const templates = {
-            boy: `
-                <div class="child boy">
-                    <div class="child-inner">
-                        <div class="hair"><div class="hair-fringe"></div></div>
-                        <div class="eyes-container"><div class="eye"></div><div class="eye"></div></div>
-                        <div class="mouth"></div>
-                        <div class="zzz">Zzz</div>
-                        <div class="hand-wave"></div>
-                        <div class="teardrop-container"><div class="teardrop t1"></div><div class="teardrop t2"></div></div>
-                    </div>
-                </div>`,
-            girl: `
-                <div class="child girl">
-                    <div class="child-inner">
-                        <div class="hair"><div class="bow"></div></div>
-                        <div class="eyes-container"><div class="eye"></div><div class="eye"></div></div>
-                        <div class="mouth"></div>
-                        <div class="zzz">Zzz</div>
-                        <div class="hand-wave"></div>
-                        <div class="teardrop-container"><div class="teardrop t1"></div><div class="teardrop t2"></div></div>
-                    </div>
-                </div>`
-        };
-
-        // Renderiza y organiza matemáticamente en un círculo
-        function renderChildrenCircle(count) {
-            stage.innerHTML = '';
-            currentChildrenCount = count;
-
-            // Si hay más de 2 niños, activamos la animación de girar en la ronda
-            if (count > 2) {
-                stage.classList.add('circle-playing');
-            } else {
-                stage.classList.remove('circle-playing');
-            }
-
-            const radius = 160; // Radio del círculo en píxeles
-            const centerX = stage.clientWidth / 2;
-            const centerY = stage.clientHeight / 2;
-
-            for (let i = 0; i < count; i++) {
-                const type = (i % 2 === 0) ? 'boy' : 'girl';
-                stage.insertAdjacentHTML('beforeend', templates[type]);
-
-                const element = stage.lastElementChild;
-
-                // Si hay solo 2 niños los ponemos lado a lado de forma fija
-                if (count === 2) {
-                    element.style.position = 'static';
-                    stage.style.display = 'flex';
-                    stage.style.gap = '40px';
-                } else {
-                    // Cálculo matemático de distribución circular (Trigonometría clásica)
-                    stage.style.display = 'block';
-                    element.style.position = 'absolute';
-                    const angle = (i * 2 * Math.PI) / count;
-                    const x = centerX + radius * Math.cos(angle) - 65; // 65 es la mitad del ancho del niño
-                    const y = centerY + radius * Math.sin(angle) - 65;
-                    element.style.left = `${x}px`;
-                    element.style.top = `${y}px`;
-                }
-            }
-        }
 
         function changeState(key) {
             switch(key) {
-                case 's':
-                    renderChildrenCircle(currentChildrenCount + 2); // Agrega 2 más
-                    body.className = 'sleep-mode';
-                    break;
-                case 'b':
-                    renderChildrenCircle(currentChildrenCount + 2); // Agrega 2 más
-                    body.className = 'sad-mode';
-                    break;
-                case 'a':
-                    renderChildrenCircle(currentChildrenCount + 2); // Agrega 2 más
-                    body.className = 'happy-mode';
-                    break;
-                case 'h':
-                    renderChildrenCircle(currentChildrenCount + 2); // Agrega 2 más
-                    body.className = 'greet-mode';
-                    break;
-                case 'j':
-                    renderChildrenCircle(6); // Resetea / Muestra directamente a los 6 niños
-                    body.className = 'greet-mode';
-                    break;
+                case 's': body.className = 'sleep-mode'; break;
+                case 'b': body.className = 'sad-mode'; break;
+                case 'a': body.className = 'happy-mode'; break;
+                case 'h': case 'j': body.className = 'greet-mode'; break;
             }
         }
 
@@ -374,9 +297,6 @@
                 changeState(key);
             }
         });
-
-        // Inicio por defecto con 2 niños
-        renderChildrenCircle(2);
     </script>
 </body>
 </html>
