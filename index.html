@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palacio del Rey Agüero - Súper Holograma</title>
+  <title>Palacio del Rey Agüero - Homenaje Infantil</title>
   <style>
     * {
       box-sizing: border-box;
@@ -15,12 +15,12 @@
       width: 100vw;
       height: 100vh;
       background: transparent !important;
-      font-family: 'Segoe UI', Roboto, sans-serif;
+      font-family: 'Comic Sans MS', 'Fredoka', 'Segoe UI', Roboto, sans-serif;
       overflow: hidden;
       position: relative;
     }
 
-    /* Resplandor holográfico ambiental transparente en toda la pantalla */
+    /* Resplandor holográfico ambiental en toda la pantalla */
     .full-page-glow {
       position: absolute;
       top: 0;
@@ -33,19 +33,26 @@
       mix-blend-mode: screen;
     }
 
-    /* Título Súper Holográfico */
+    /* Título HOMENAJE: Totalmente Estático, Visible e Infantil */
     .title {
       position: absolute;
-      top: 30px;
-      width: 100%;
-      text-align: center;
-      font-size: 3.5rem;
+      top: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 3.8rem;
       font-weight: 900;
-      letter-spacing: 12px;
+      letter-spacing: 8px;
       text-transform: uppercase;
-      transition: color 0.4s ease, text-shadow 0.4s ease;
+      color: #00ffff;
+      text-shadow: 
+        0 0 10px #00ffff,
+        0 0 20px #00ffff,
+        0 0 30px #ff00de,
+        0 0 40px #ff00de;
       z-index: 10;
       pointer-events: none;
+      white-space: nowrap;
+      user-select: none;
     }
 
     #canvas-container {
@@ -91,15 +98,17 @@
     let blinkTimer = 0;
     let time = 0;
 
-    // Partículas holográficas para llenar toda la pantalla
-    const particleCount = 120;
+    // Partículas en forma de estrellas y chispas infantiles
+    const particleCount = 70;
     const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      size: Math.random() * 3 + 1,
-      speedY: Math.random() * 1.8 + 0.5,
-      speedX: (Math.random() - 0.5) * 0.8,
-      alpha: Math.random()
+      size: Math.random() * 4 + 2,
+      speedY: Math.random() * 1.5 + 0.5,
+      speedX: (Math.random() - 0.5) * 0.6,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.05,
+      alpha: Math.random() * 0.7 + 0.3
     }));
 
     document.addEventListener('keydown', (e) => {
@@ -134,8 +143,9 @@
       particles.forEach(p => {
         p.y -= p.speedY;
         p.x += p.speedX;
-        if (p.y < 0) {
-          p.y = canvas.height;
+        p.rot += p.rotSpeed;
+        if (p.y < -20) {
+          p.y = canvas.height + 20;
           p.x = Math.random() * canvas.width;
         }
         if (p.x < 0) p.x = canvas.width;
@@ -143,199 +153,235 @@
       });
     }
 
+    // Dibujar estrella infantil
+    function drawStar(cx, cy, spikes, outerRadius, innerRadius, color) {
+      let rot = Math.PI / 2 * 3;
+      let x = cx;
+      let y = cy;
+      let step = Math.PI / spikes;
+
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - outerRadius);
+      for (let i = 0; i < spikes; i++) {
+        x = cx + Math.cos(rot) * outerRadius;
+        y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+
+        x = cx + Math.cos(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+      }
+      ctx.lineTo(cx, cy - outerRadius);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+    }
+
     function drawScene() {
-      // Limpieza total del lienzo para asegurar fondo 100% transparente
+      // Limpieza del lienzo para mantener fondo 100% transparente
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const mainHue = lerp(340, 185, animProgress);
-      const holoColor = `hsl(${mainHue}, 100%, 65%)`;
-      const holoGlow = `hsl(${mainHue}, 100%, 50%)`;
+      const mainHue = lerp(340, 190, animProgress);
+      const holoColor = `hsl(${mainHue}, 100%, 70%)`;
+      const holoGlow = `hsl(${mainHue}, 100%, 55%)`;
 
-      // Resplandor difuso ambiental en los bordes de la pantalla
-      glowElem.style.background = `radial-gradient(circle at 50% 50%, hsla(${mainHue}, 100%, 50%, 0.18) 0%, hsla(${mainHue}, 100%, 30%, 0.05) 70%, transparent 100%)`;
+      // Resplandor difuso ambiental
+      glowElem.style.background = `radial-gradient(circle at 50% 50%, hsla(${mainHue}, 100%, 55%, 0.18) 0%, hsla(${mainHue}, 100%, 35%, 0.05) 70%, transparent 100%)`;
+
+      // Título estático con color dinámico holográfico
       titleElem.style.color = holoColor;
-      titleElem.style.textShadow = `0 0 20px ${holoGlow}, 0 0 40px ${holoGlow}, 0 0 60px ${holoGlow}`;
+      titleElem.style.textShadow = `0 0 15px ${holoGlow}, 0 0 30px ${holoGlow}`;
 
       const cx = canvas.width / 2;
-      const cy = canvas.height * 0.38;
-      const floatY = Math.sin(time * 2) * 10;
+      const cy = canvas.height * 0.42;
+      const floatY = Math.sin(time * 2.5) * 12;
 
-      // 1. Haz de Luz Holográfico Gigante (Proyector Base)
-      const beamGrad = ctx.createLinearGradient(cx, canvas.height, cx, cy - 120);
-      beamGrad.addColorStop(0, `hsla(${mainHue}, 100%, 55%, 0.45)`);
+      // 1. Haz de Luz Holográfico Proyector Infantil
+      const beamGrad = ctx.createLinearGradient(cx, canvas.height, cx, cy - 100);
+      beamGrad.addColorStop(0, `hsla(${mainHue}, 100%, 60%, 0.4)`);
       beamGrad.addColorStop(0.5, `hsla(${mainHue}, 100%, 50%, 0.15)`);
       beamGrad.addColorStop(1, `hsla(${mainHue}, 100%, 50%, 0.0)`);
 
       ctx.fillStyle = beamGrad;
       ctx.beginPath();
-      ctx.moveTo(cx - 380, canvas.height);
-      ctx.lineTo(cx + 380, canvas.height);
-      ctx.lineTo(cx + 200, cy - 120);
-      ctx.lineTo(cx - 200, cy - 120);
+      ctx.moveTo(cx - 300, canvas.height);
+      ctx.lineTo(cx + 300, canvas.height);
+      ctx.lineTo(cx + 180, cy - 100);
+      ctx.lineTo(cx - 180, cy - 100);
       ctx.closePath();
       ctx.fill();
 
-      // 2. Partículas Holográficas Ambientalizadas
+      // 2. Partículas Infantiles en forma de Estrellitas
       particles.forEach(p => {
-        ctx.fillStyle = `hsla(${mainHue}, 100%, 75%, ${p.alpha})`;
-        ctx.shadowColor = holoGlow;
-        ctx.shadowBlur = 8;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rot);
+        drawStar(0, 0, 5, p.size, p.size / 2, `hsla(${mainHue}, 100%, 80%, ${p.alpha})`);
+        ctx.restore();
       });
 
-      // 3. Renderizado de la Entidad Holográfica
+      // 3. Personaje Holográfico Infantil (Estilo Chibi)
       ctx.save();
       ctx.translate(0, floatY);
       ctx.strokeStyle = holoColor;
       ctx.shadowColor = holoGlow;
-      ctx.shadowBlur = 25;
-      ctx.lineWidth = 3;
+      ctx.shadowBlur = 22;
+      ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
 
-      const bodyY = cy + 100;
-
-      // Torso
+      // --- CORONA INFANTIL ---
       ctx.beginPath();
-      ctx.moveTo(cx - 45, bodyY); ctx.lineTo(cx + 45, bodyY);
-      ctx.lineTo(cx + 35, bodyY + 120); ctx.lineTo(cx - 35, bodyY + 120);
+      ctx.moveTo(cx - 35, cy - 105);
+      ctx.lineTo(cx - 45, cy - 135);
+      ctx.lineTo(cx - 20, cy - 118);
+      ctx.lineTo(cx, cy - 142);
+      ctx.lineTo(cx + 20, cy - 118);
+      ctx.lineTo(cx + 45, cy - 135);
+      ctx.lineTo(cx + 35, cy - 105);
       ctx.closePath();
       ctx.stroke();
 
-      // Cuello
+      // Gemas de la corona
+      [-45, 0, 45].forEach((gx, idx) => {
+        const gy = idx === 1 ? cy - 142 : cy - 135;
+        ctx.beginPath();
+        ctx.arc(cx + gx, gy, 4, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+      });
+
+      // --- CABEZA CHIBI GRANDE Y REDONDA ---
       ctx.beginPath();
-      ctx.moveTo(cx - 15, bodyY); ctx.lineTo(cx - 15, cy + 85);
-      ctx.moveTo(cx + 15, bodyY); ctx.lineTo(cx + 15, cy + 85);
+      ctx.arc(cx, cy, 80, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Brazos
+      // Cabello infantil amigable
       ctx.beginPath();
-      ctx.moveTo(cx - 45, bodyY); ctx.lineTo(cx - 75, bodyY + 65);
-      ctx.lineTo(cx - 85, bodyY + 125); ctx.arc(cx - 87, bodyY + 128, 5, 0, Math.PI * 2);
+      ctx.arc(cx - 40, cy - 50, 30, Math.PI * 0.8, Math.PI * 1.8);
+      ctx.arc(cx, cy - 65, 35, Math.PI * 0.9, Math.PI * 1.9);
+      ctx.arc(cx + 40, cy - 50, 30, Math.PI * 1.2, Math.PI * 0.2);
       ctx.stroke();
 
+      // --- MEJILLAS / RUBOR INFANTIL ---
+      ctx.fillStyle = `hsla(${mainHue}, 100%, 80%, 0.45)`;
       ctx.beginPath();
-      ctx.moveTo(cx + 45, bodyY); ctx.lineTo(cx + 75, bodyY + 65);
-      ctx.lineTo(cx + 85, bodyY + 125); ctx.arc(cx + 87, bodyY + 128, 5, 0, Math.PI * 2);
-      ctx.stroke();
+      ctx.ellipse(cx - 42, cy + 18, 12, 8, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx + 42, cy + 18, 12, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
 
-      // Piernas
-      ctx.beginPath();
-      ctx.moveTo(cx - 25, bodyY + 120); ctx.lineTo(cx - 30, bodyY + 200); ctx.lineTo(cx - 32, bodyY + 280);
-      ctx.stroke();
-
-      ctx.beginPath();
-      ctx.moveTo(cx + 25, bodyY + 120); ctx.lineTo(cx + 30, bodyY + 200); ctx.lineTo(cx + 32, bodyY + 280);
-      ctx.stroke();
-
-      // Cabeza
-      ctx.beginPath();
-      ctx.moveTo(cx - 60, cy - 30);
-      ctx.quadraticCurveTo(cx - 65, cy + 40, cx - 25, cy + 80);
-      ctx.lineTo(cx, cy + 90); ctx.lineTo(cx + 25, cy + 80);
-      ctx.quadraticCurveTo(cx + 65, cy + 40, cx + 60, cy - 30);
-      ctx.quadraticCurveTo(cx, cy - 100, cx - 60, cy - 30);
-      ctx.stroke();
-
-      // Cabello
-      ctx.beginPath();
-      ctx.moveTo(cx - 60, cy - 30);
-      ctx.quadraticCurveTo(cx - 30, cy - 95, cx, cy - 70);
-      ctx.quadraticCurveTo(cx + 30, cy - 95, cx + 60, cy - 30);
-      ctx.stroke();
-
-      // Cejas
-      const eyebrowY = lerp(cy - 25, cy - 35, animProgress);
-      const eyebrowTilt = lerp(20, -5, animProgress);
-      ctx.lineWidth = 4;
-      ctx.beginPath();
-      ctx.moveTo(cx - 50, eyebrowY - eyebrowTilt); ctx.lineTo(cx - 15, eyebrowY + eyebrowTilt);
-      ctx.moveTo(cx + 15, eyebrowY + eyebrowTilt); ctx.lineTo(cx + 50, eyebrowY - eyebrowTilt);
-      ctx.stroke();
-
-      // Ojos
-      const eyeY = cy - 2;
-      const eyeWidth = 20;
-      const eyeHeight = lerp(28, 36, animProgress);
+      // --- OJOS GRANDES Y TIERNO ---
+      const eyeY = cy - 5;
+      const eyeWidth = 22;
+      const eyeHeight = lerp(32, 38, animProgress);
 
       [cx - 32, cx + 32].forEach((ex) => {
         ctx.save();
         ctx.translate(ex, eyeY);
         ctx.scale(1, eyeScaleY);
 
+        // Contorno ojo
         ctx.beginPath();
         ctx.ellipse(0, 0, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
         ctx.strokeStyle = holoColor;
-        ctx.lineWidth = 2.5;
+        ctx.lineWidth = 3;
         ctx.stroke();
 
+        // Pupila rellena
         ctx.beginPath();
-        ctx.ellipse(0, 2, eyeWidth - 5, eyeHeight - 7, 0, 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.ellipse(0, 4, 5, 9, 0, 0, Math.PI * 2);
+        ctx.ellipse(0, 2, eyeWidth - 6, eyeHeight - 8, 0, 0, Math.PI * 2);
         ctx.fillStyle = holoColor;
         ctx.fill();
 
+        // Brillo infantil / Estrellita en el ojo
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(-5, -7, 4.5, 0, Math.PI * 2);
-        ctx.arc(4, 7, 2, 0, Math.PI * 2);
+        ctx.arc(-6, -8, 6, 0, Math.PI * 2);
+        ctx.arc(5, 8, 3, 0, Math.PI * 2);
         ctx.fill();
 
         ctx.restore();
 
+        // Pestaña / Ceja tierna
+        const eyebrowY = lerp(cy - 40, cy - 48, animProgress);
         ctx.beginPath();
-        ctx.lineWidth = 4;
-        ctx.arc(ex, eyeY - eyeHeight * eyeScaleY + 5, eyeWidth + 2, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.lineWidth = 3.5;
+        ctx.arc(ex, eyebrowY, 18, Math.PI * 1.2, Math.PI * 1.8);
         ctx.stroke();
       });
 
-      // Boca
-      const mouthY = cy + 45;
+      // --- BOCA INFANTIL SONRIENTE ---
+      const mouthY = cy + 28;
       if (animProgress < 0.5) {
-        const shake = Math.sin(time * 30) * 1.5;
-
+        // Enojo juguetón/Infantil (Puchero)
         ctx.beginPath();
-        ctx.moveTo(cx - 22 + shake, mouthY);
-        ctx.lineTo(cx + 22 + shake, mouthY + 3);
-        ctx.lineTo(cx + 14 + shake, mouthY + 16);
-        ctx.lineTo(cx - 18 + shake, mouthY + 14);
-        ctx.closePath();
-        ctx.stroke();
-
-        ctx.beginPath();
-        ctx.moveTo(cx - 7 + shake, mouthY);
-        ctx.lineTo(cx - 1 + shake, mouthY);
-        ctx.lineTo(cx - 4 + shake, mouthY + 11);
-        ctx.closePath();
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
+        ctx.arc(cx, mouthY + 15, 14, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.lineWidth = 4;
         ctx.stroke();
       } else {
+        // Sonrisa tierna abierta
         ctx.beginPath();
-        ctx.arc(cx, mouthY - 5, 18, 0.2 * Math.PI, 0.8 * Math.PI, false);
-        ctx.lineWidth = 3.5;
+        ctx.arc(cx, mouthY, 20, 0.1 * Math.PI, 0.9 * Math.PI, false);
+        ctx.lineWidth = 4;
         ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(cx, mouthY + 2, 12, 0.1 * Math.PI, 0.9 * Math.PI, false);
+        ctx.fillStyle = holoColor;
+        ctx.fill();
       }
+
+      // --- CUERPO INFANTIL PEQUEÑO (CUERPO CHIBI) ---
+      const bodyY = cy + 80;
+
+      // Vestidito / Ropa redondeada
+      ctx.beginPath();
+      ctx.moveTo(cx - 20, bodyY);
+      ctx.lineTo(cx - 45, bodyY + 80);
+      ctx.quadraticCurveTo(cx, bodyY + 95, cx + 45, bodyY + 80);
+      ctx.lineTo(cx + 20, bodyY);
+      ctx.closePath();
+      ctx.stroke();
+
+      // Brazos pequeños saludando
+      ctx.beginPath();
+      // Brazo izquierdo saludando con varita
+      ctx.moveTo(cx - 20, bodyY + 10);
+      ctx.lineTo(cx - 55, bodyY + 5);
+      ctx.lineTo(cx - 70, bodyY - 20);
+      ctx.stroke();
+
+      // Varita mágica infantil
+      ctx.beginPath();
+      ctx.moveTo(cx - 70, bodyY - 20);
+      ctx.lineTo(cx - 85, bodyY - 50);
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      drawStar(cx - 85, cy - 50, 5, 12, 6, '#ffffff');
+
+      // Brazo derecho
+      ctx.beginPath();
+      ctx.moveTo(cx + 20, bodyY + 10);
+      ctx.lineTo(cx + 50, bodyY + 30);
+      ctx.lineTo(cx + 60, bodyY + 55);
+      ctx.lineWidth = 4;
+      ctx.stroke();
+
+      // Pies pequeñitos
+      ctx.beginPath();
+      ctx.arc(cx - 18, bodyY + 98, 10, 0, Math.PI * 2);
+      ctx.arc(cx + 18, bodyY + 98, 10, 0, Math.PI * 2);
+      ctx.stroke();
 
       ctx.restore();
 
-      // 4. Efectos de Líneas de Escaneo e Interferencia Súper Holográfica
+      // 4. Líneas Suaves de Escaneo Holográfico
       ctx.shadowBlur = 0;
-      ctx.fillStyle = `rgba(0, 255, 255, 0.04)`;
-      for (let i = 0; i < canvas.height; i += 3) {
-        ctx.fillRect(0, i, canvas.width, 1);
-      }
-
-      // Desplazamiento aleatorio tipo Glitch de pantalla holográfica
-      if (Math.random() < 0.12) {
-        const glitchY = Math.random() * canvas.height;
-        const glitchHeight = Math.random() * 15 + 2;
-        const glitchOffset = (Math.random() - 0.5) * 20;
-        ctx.fillStyle = `hsla(${mainHue}, 100%, 70%, 0.15)`;
-        ctx.fillRect(glitchOffset, glitchY, canvas.width, glitchHeight);
+      ctx.fillStyle = `rgba(0, 255, 255, 0.03)`;
+      for (let i = 0; i < canvas.height; i += 4) {
+        ctx.fillRect(0, i, canvas.width, 2);
       }
     }
 
