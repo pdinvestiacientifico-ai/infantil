@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Homenaje Holográfico</title>
+  <title>Palacio del Rey Agüero - Homenaje</title>
   <style>
     * {
       box-sizing: border-box;
@@ -17,13 +17,13 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: #02050e;
+      background: #020308;
       font-family: 'Segoe UI', Roboto, sans-serif;
       overflow: hidden;
       position: relative;
     }
 
-    /* Resplandor del holograma que cubre TODA la página */
+    /* Resplandor holográfico ambiental */
     .full-page-glow {
       position: absolute;
       top: 0;
@@ -32,16 +32,16 @@
       height: 100vh;
       pointer-events: none;
       transition: background 0.5s ease;
-      z-index: 1;
+      z-index: 2;
     }
 
     /* Texto Único: HOMENAJE */
     .title {
       position: absolute;
-      top: 40px;
-      font-size: 2.8rem;
+      top: 35px;
+      font-size: 3rem;
       font-weight: 900;
-      letter-spacing: 8px;
+      letter-spacing: 10px;
       text-transform: uppercase;
       transition: color 0.5s ease, text-shadow 0.5s ease;
       z-index: 10;
@@ -49,14 +49,15 @@
 
     #canvas-container {
       position: relative;
-      width: 600px;
-      height: 700px;
+      width: 100vw;
+      height: 100vh;
       z-index: 5;
     }
 
     canvas {
       width: 100%;
       height: 100%;
+      display: block;
     }
   </style>
 </head>
@@ -66,7 +67,7 @@
   <div id="title" class="title">HOMENAJE</div>
 
   <div id="canvas-container">
-    <canvas id="holoCanvas" width="600" height="700"></canvas>
+    <canvas id="holoCanvas"></canvas>
   </div>
 
   <script>
@@ -75,18 +76,24 @@
     const glowElem = document.getElementById('glow');
     const titleElem = document.getElementById('title');
 
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
     let targetState = 'happy';
     let animProgress = 1; // 0 = Angry, 1 = Happy
     let eyeScaleY = 1;
     let blinkTimer = 0;
     let time = 0;
 
-    // Partículas ambientales de holograma
-    const particles = Array.from({ length: 45 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
+    const particles = Array.from({ length: 60 }, () => ({
+      x: Math.random() * window.innerWidth,
+      y: Math.random() * window.innerHeight,
       size: Math.random() * 2.5 + 1,
-      speedY: Math.random() * 1.5 + 0.5,
+      speedY: Math.random() * 1.2 + 0.4,
       alpha: Math.random()
     }));
 
@@ -111,7 +118,6 @@
         if (animProgress < 0) animProgress = 0;
       }
 
-      // Parpadeo
       blinkTimer += 0.025;
       if (blinkTimer > 3) {
         eyeScaleY = Math.abs(Math.sin(blinkTimer * 12));
@@ -120,7 +126,6 @@
         eyeScaleY = 1;
       }
 
-      // Animación de partículas
       particles.forEach(p => {
         p.y -= p.speedY;
         if (p.y < 0) {
@@ -130,38 +135,135 @@
       });
     }
 
-    function drawRealHologram() {
+    // --- DIBUJO DEL INTERIOR DEL PALACIO DEL REY AGÜERO ---
+    function drawPalaceBackground(mainHue) {
+      const w = canvas.width;
+      const h = canvas.height;
+      const cx = w / 2;
+
+      // Pared de fondo del palacio
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+      bgGrad.addColorStop(0, '#0a0814');
+      bgGrad.addColorStop(0.5, '#161226');
+      bgGrad.addColorStop(1, '#05040a');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      ctx.save();
+      ctx.strokeStyle = `hsla(${mainHue}, 40%, 35%, 0.3)`;
+      ctx.lineWidth = 2;
+
+      // 1. Suelo de mármol en perspectiva (Baldosas reales)
+      const horizon = h * 0.55;
+      ctx.beginPath();
+      for (let x = -w; x <= w * 2; x += 120) {
+        ctx.moveTo(x, h);
+        ctx.lineTo(cx + (x - cx) * 0.15, horizon);
+      }
+      for (let y = horizon; y <= h; y += (y - horizon) * 0.3 + 12) {
+        ctx.moveTo(0, y);
+        ctx.lineTo(w, y);
+      }
+      ctx.stroke();
+
+      // 2. Columnas Reales de Palacio
+      const columnPositions = [cx - 380, cx - 220, cx + 220, cx + 380];
+      columnPositions.forEach(colX => {
+        // Base y fuste
+        ctx.fillStyle = 'rgba(25, 20, 38, 0.8)';
+        ctx.fillRect(colX - 25, 0, 50, horizon + 50);
+        
+        ctx.strokeStyle = `hsla(${mainHue}, 60%, 40%, 0.4)`;
+        ctx.strokeRect(colX - 25, 0, 50, horizon + 50);
+        
+        // Detalles estriados dorados
+        ctx.beginPath();
+        ctx.moveTo(colX - 10, 0); ctx.lineTo(colX - 10, horizon + 50);
+        ctx.moveTo(colX + 10, 0); ctx.lineTo(colX + 10, horizon + 50);
+        ctx.stroke();
+      });
+
+      // 3. Arcos Palaciegos
+      ctx.beginPath();
+      ctx.arc(cx, horizon - 80, 200, Math.PI, 0, false);
+      ctx.arc(cx, horizon - 80, 360, Math.PI, 0, false);
+      ctx.strokeStyle = `hsla(${mainHue}, 70%, 45%, 0.5)`;
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // 4. El Trono Real del Rey Agüero (Fondo central)
+      ctx.fillStyle = '#1c1428';
+      ctx.strokeStyle = `hsla(${mainHue}, 80%, 55%, 0.6)`;
+      ctx.lineWidth = 2;
+      
+      // Respaldo del trono
+      ctx.beginPath();
+      ctx.moveTo(cx - 45, horizon);
+      ctx.lineTo(cx - 45, horizon - 110);
+      ctx.lineTo(cx, horizon - 140); // Cúspide del trono
+      ctx.lineTo(cx + 45, horizon - 110);
+      ctx.lineTo(cx + 45, horizon);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Asiento
+      ctx.fillRect(cx - 55, horizon - 35, 110, 35);
+      ctx.strokeRect(cx - 55, horizon - 35, 110, 35);
+
+      // 5. Estandartes del Rey Agüero
+      [-1, 1].forEach(side => {
+        const flagX = cx + side * 150;
+        ctx.fillStyle = `hsla(${mainHue}, 70%, 25%, 0.6)`;
+        ctx.beginPath();
+        ctx.moveTo(flagX - 20, horizon - 160);
+        ctx.lineTo(flagX + 20, horizon - 160);
+        ctx.lineTo(flagX + 20, horizon - 50);
+        ctx.lineTo(flagX, horizon - 30);
+        ctx.lineTo(flagX - 20, horizon - 50);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+      });
+
+      ctx.restore();
+    }
+
+    function drawScene() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const mainHue = lerp(340, 185, animProgress); // Magenta/Rojo para M, Cian para N
       const holoColor = `hsl(${mainHue}, 100%, 65%)`;
       const holoGlow = `hsl(${mainHue}, 100%, 50%)`;
 
-      // --- 1. LUZ COMPLETA DE PÁGINA (CSS DYNAMIC GLOW) ---
-      glowElem.style.background = `radial-gradient(circle at 50% 60%, hsla(${mainHue}, 100%, 45%, 0.28) 0%, hsla(${mainHue}, 100%, 15%, 0.08) 60%, transparent 100%)`;
+      // 1. Fondo Palacio
+      drawPalaceBackground(mainHue);
+
+      // 2. Resplandor holográfico ambiental
+      glowElem.style.background = `radial-gradient(circle at 50% 60%, hsla(${mainHue}, 100%, 45%, 0.3) 0%, hsla(${mainHue}, 100%, 15%, 0.1) 60%, transparent 100%)`;
       titleElem.style.color = holoColor;
       titleElem.style.textShadow = `0 0 15px ${holoGlow}, 0 0 30px ${holoGlow}`;
 
       const cx = canvas.width / 2;
-      const cy = 240;
-      const floatY = Math.sin(time * 2) * 8; // Flotación realista
+      const cy = canvas.height * 0.38;
+      const floatY = Math.sin(time * 2) * 8;
 
-      // --- 2. HAZ DE LUZ HOLOGRÁFICO PRINCIPAL ---
-      const beamGrad = ctx.createLinearGradient(cx, 620, cx, 50);
+      // 3. Haz de luz holográfico
+      const beamGrad = ctx.createLinearGradient(cx, canvas.height * 0.85, cx, cy - 100);
       beamGrad.addColorStop(0, `hsla(${mainHue}, 100%, 50%, 0.45)`);
       beamGrad.addColorStop(0.7, `hsla(${mainHue}, 100%, 50%, 0.12)`);
       beamGrad.addColorStop(1, `hsla(${mainHue}, 100%, 50%, 0.0)`);
 
       ctx.fillStyle = beamGrad;
       ctx.beginPath();
-      ctx.moveTo(cx - 240, 620);
-      ctx.lineTo(cx + 240, 620);
-      ctx.lineTo(cx + 200, 50);
-      ctx.lineTo(cx - 200, 50);
+      ctx.moveTo(cx - 220, canvas.height * 0.85);
+      ctx.lineTo(cx + 220, canvas.height * 0.85);
+      ctx.lineTo(cx + 170, cy - 100);
+      ctx.lineTo(cx - 170, cy - 100);
       ctx.closePath();
       ctx.fill();
 
-      // Partículas flotando en el haz
+      // Partículas holográficas
       particles.forEach(p => {
         ctx.fillStyle = `hsla(${mainHue}, 100%, 75%, ${p.alpha})`;
         ctx.beginPath();
@@ -169,7 +271,7 @@
         ctx.fill();
       });
 
-      // --- 3. PERSONAJE REALISTA HOLOGRÁFICO ---
+      // 4. PERSONAJE REALISTA HOLOGRÁFICO
       ctx.save();
       ctx.translate(0, floatY);
       ctx.strokeStyle = holoColor;
@@ -181,10 +283,8 @@
 
       // -- TORSO REALISTA --
       ctx.beginPath();
-      ctx.moveTo(cx - 45, bodyY); // Hombro izq
-      ctx.lineTo(cx + 45, bodyY); // Hombro der
-      ctx.lineTo(cx + 35, bodyY + 120); // Cintura der
-      ctx.lineTo(cx - 35, bodyY + 120); // Cintura izq
+      ctx.moveTo(cx - 45, bodyY); ctx.lineTo(cx + 45, bodyY);
+      ctx.lineTo(cx + 35, bodyY + 120); ctx.lineTo(cx - 35, bodyY + 120);
       ctx.closePath();
       ctx.stroke();
 
@@ -195,48 +295,35 @@
       ctx.stroke();
 
       // -- BRAZOS REALISTAS CON ARTICULACIONES --
-      // Brazo Izquierdo
       ctx.beginPath();
-      ctx.moveTo(cx - 45, bodyY);
-      ctx.lineTo(cx - 75, bodyY + 65); // Codo
-      ctx.lineTo(cx - 85, bodyY + 125); // Muñeca y Mano
-      ctx.arc(cx - 87, bodyY + 128, 5, 0, Math.PI * 2);
+      ctx.moveTo(cx - 45, bodyY); ctx.lineTo(cx - 75, bodyY + 65);
+      ctx.lineTo(cx - 85, bodyY + 125); ctx.arc(cx - 87, bodyY + 128, 5, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Brazo Derecho
       ctx.beginPath();
-      ctx.moveTo(cx + 45, bodyY);
-      ctx.lineTo(cx + 75, bodyY + 65);
-      ctx.lineTo(cx + 85, bodyY + 125);
-      ctx.arc(cx + 87, bodyY + 128, 5, 0, Math.PI * 2);
+      ctx.moveTo(cx + 45, bodyY); ctx.lineTo(cx + 75, bodyY + 65);
+      ctx.lineTo(cx + 85, bodyY + 125); ctx.arc(cx + 87, bodyY + 128, 5, 0, Math.PI * 2);
       ctx.stroke();
 
       // -- PIERNAS REALISTAS --
-      // Pierna Izquierda
       ctx.beginPath();
-      ctx.moveTo(cx - 25, bodyY + 120);
-      ctx.lineTo(cx - 30, bodyY + 200); // Rodilla
-      ctx.lineTo(cx - 32, bodyY + 280); // Tobillo
+      ctx.moveTo(cx - 25, bodyY + 120); ctx.lineTo(cx - 30, bodyY + 200); ctx.lineTo(cx - 32, bodyY + 280);
       ctx.stroke();
 
-      // Pierna Derecha
       ctx.beginPath();
-      ctx.moveTo(cx + 25, bodyY + 120);
-      ctx.lineTo(cx + 30, bodyY + 200);
-      ctx.lineTo(cx + 32, bodyY + 280);
+      ctx.moveTo(cx + 25, bodyY + 120); ctx.lineTo(cx + 30, bodyY + 200); ctx.lineTo(cx + 32, bodyY + 280);
       ctx.stroke();
 
       // -- CABEZA ANATÓMICA PROPORCIONAL --
       ctx.beginPath();
       ctx.moveTo(cx - 60, cy - 30);
       ctx.quadraticCurveTo(cx - 65, cy + 40, cx - 25, cy + 80);
-      ctx.lineTo(cx, cy + 90); // Mentón
-      ctx.lineTo(cx + 25, cy + 80);
+      ctx.lineTo(cx, cy + 90); ctx.lineTo(cx + 25, cy + 80);
       ctx.quadraticCurveTo(cx + 65, cy + 40, cx + 60, cy - 30);
       ctx.quadraticCurveTo(cx, cy - 100, cx - 60, cy - 30);
       ctx.stroke();
 
-      // Cabello estilizado
+      // Cabello
       ctx.beginPath();
       ctx.moveTo(cx - 60, cy - 30);
       ctx.quadraticCurveTo(cx - 30, cy - 95, cx, cy - 70);
@@ -252,7 +339,7 @@
       ctx.moveTo(cx + 15, eyebrowY + eyebrowTilt); ctx.lineTo(cx + 50, eyebrowY - eyebrowTilt);
       ctx.stroke();
 
-      // --- 4. OJOS ANIME ORIGINALES (CONSERVADOS) ---
+      // -- OJOS ANIME CONSERVADOS --
       const eyeY = cy - 2;
       const eyeWidth = 20;
       const eyeHeight = lerp(28, 36, animProgress);
@@ -291,7 +378,7 @@
         ctx.stroke();
       });
 
-      // --- 5. BOCA Y DIENTE MORDIENDO ANIME ---
+      // -- BOCA Y DIENTE MORDIENDO --
       const mouthY = cy + 45;
 
       if (animProgress < 0.5) {
@@ -305,7 +392,6 @@
         ctx.closePath();
         ctx.stroke();
 
-        // Diente mordiendo labio
         ctx.beginPath();
         ctx.moveTo(cx - 7 + shake, mouthY);
         ctx.lineTo(cx - 1 + shake, mouthY);
@@ -323,7 +409,7 @@
 
       ctx.restore();
 
-      // --- 6. LINEAS DE ESCANEO HOLOGRÁFICAS ---
+      // Líneas de escaneo holográficas
       ctx.fillStyle = `rgba(0, 0, 0, 0.18)`;
       for (let i = 0; i < canvas.height; i += 4) {
         ctx.fillRect(0, i, canvas.width, 2);
@@ -332,7 +418,7 @@
 
     function loop() {
       update();
-      drawRealHologram();
+      drawScene();
       requestAnimationFrame(loop);
     }
 
