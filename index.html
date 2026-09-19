@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Avatar Dinámico Interactivo</title>
+  <title>Personaje Anime Interactivo</title>
   <style>
     * {
       box-sizing: border-box;
@@ -17,87 +17,80 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: radial-gradient(circle at center, #1e1e2e 0%, #0f0f17 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: radial-gradient(circle at center, #2b213a 0%, #110e18 100%);
+      font-family: 'Segoe UI', Roboto, sans-serif;
       color: #ffffff;
       overflow: hidden;
     }
 
     .instructions {
-      margin-bottom: 25px;
-      font-size: 1.2rem;
+      margin-bottom: 20px;
+      font-size: 1.1rem;
       text-align: center;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 15px 25px;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 12px 24px;
       border-radius: 12px;
-      backdrop-filter: blur(8px);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .key {
-      background: #89b4fa;
-      color: #11111b;
-      padding: 4px 12px;
+      background: #ff79c6;
+      color: #110e18;
+      padding: 4px 10px;
       border-radius: 6px;
       font-weight: bold;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+      box-shadow: 0 2px 5px rgba(255, 121, 198, 0.4);
     }
 
     #canvas-container {
       position: relative;
-      width: 400px;
-      height: 400px;
+      width: 420px;
+      height: 420px;
     }
 
     canvas {
       width: 100%;
       height: 100%;
-      border-radius: 50%;
     }
   </style>
 </head>
 <body>
 
   <div class="instructions">
-    Presiona <span class="key">M</span> para ver la cara molesta mordiéndose el diente <br><br>
-    Presiona <span class="key">N</span> para ver la cara feliz interactiva
+    Presiona <span class="key">M</span> para modo Anime Molesto (mordiendo el diente) <br><br>
+    Presiona <span class="key">N</span> para modo Anime Feliz
   </div>
 
   <div id="canvas-container">
-    <canvas id="faceCanvas" width="400" height="400"></canvas>
+    <canvas id="animeCanvas" width="500" height="500"></canvas>
   </div>
 
   <script>
-    const canvas = document.getElementById('faceCanvas');
+    const canvas = document.getElementById('animeCanvas');
     const ctx = canvas.getContext('2d');
 
-    // Estado del avatar
-    let state = 'happy'; // 'happy' o 'angry'
     let targetState = 'happy';
-
-    // Variables para animación fluida (interpolación / lerp)
-    let animProgress = 1; // 0 = angry, 1 = happy
+    let animProgress = 1; // 0 = Angry, 1 = Happy
     let eyeScaleY = 1;
     let blinkTimer = 0;
     let time = 0;
 
-    // Control de teclas
     document.addEventListener('keydown', (e) => {
       const key = e.key.toLowerCase();
       if (key === 'm') targetState = 'angry';
       if (key === 'n') targetState = 'happy';
     });
 
-    // Función de interpolación lineal
     function lerp(start, end, amt) {
       return (1 - amt) * start + amt * end;
     }
 
     function update() {
-      time += 0.05;
+      time += 0.04;
 
-      // Transición suave entre estados
+      // Transición fluida
       if (targetState === 'happy' && animProgress < 1) {
         animProgress += 0.08;
         if (animProgress > 1) animProgress = 1;
@@ -106,143 +99,210 @@
         if (animProgress < 0) animProgress = 0;
       }
 
-      // Parpadeo aleatorio
-      blinkTimer += 0.02;
+      // Sistema de parpadeo
+      blinkTimer += 0.025;
       if (blinkTimer > 3) {
-        eyeScaleY = Math.abs(Math.sin(blinkTimer * 10));
-        if (blinkTimer > 3.3) blinkTimer = 0;
+        eyeScaleY = Math.abs(Math.sin(blinkTimer * 12));
+        if (blinkTimer > 3.25) blinkTimer = 0;
       } else {
         eyeScaleY = 1;
       }
     }
 
-    function draw() {
+    function drawAnimeFace() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const centerX = canvas.width / 2;
-      const centerY = canvas.height / 2;
-      const radius = 150;
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2 + 10;
+      const headBreath = Math.sin(time * 2) * 2;
 
-      // Movimiento de respiración suave
-      const breath = Math.sin(time) * 3;
-
-      // --- COLOR DE CABEZA (Interpolado entre Rojo y Amarillo) ---
-      const redColor = { r: 231, g: 76, b: 60 };
-      const yellowColor = { r: 241, g: 196, b: 15 };
-      const r = Math.round(lerp(redColor.r, yellowColor.r, animProgress));
-      const g = Math.round(lerp(redColor.g, yellowColor.g, animProgress));
-      const b = Math.round(lerp(redColor.b, yellowColor.b, animProgress));
-
-      // Gradiente de la cabeza
-      const headGrad = ctx.createRadialGradient(
-        centerX - 30, centerY - 30, 10,
-        centerX, centerY, radius + breath
-      );
-      headGrad.addColorStop(0, `rgb(${Math.min(r + 40, 255)}, ${Math.min(g + 40, 255)}, ${Math.min(b + 40, 255)})`);
-      headGrad.addColorStop(1, `rgb(${r}, ${g}, ${b})`);
-
+      // --- 1. CABEZA Y ROSTRO (Forma Anime Barbilla Afilada) ---
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius + breath, 0, Math.PI * 2);
-      ctx.fillStyle = headGrad;
-      ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.4)`;
-      ctx.shadowBlur = 30;
+      ctx.moveTo(cx - 100, cy - 80);
+      ctx.quadraticCurveTo(cx - 105, cy + 30, cx - 40, cy + 110 + headBreath);
+      ctx.lineTo(cx, cy + 130 + headBreath); // Mentón afilado
+      ctx.lineTo(cx + 40, cy + 110 + headBreath);
+      ctx.quadraticCurveTo(cx + 105, cy + 30, cx + 100, cy - 80);
+      ctx.closePath();
+
+      // Sombra y piel
+      ctx.fillStyle = '#ffebd9';
       ctx.fill();
-      ctx.shadowBlur = 0; // Reset shadow
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#4a3b32';
+      ctx.stroke();
 
-      // --- CEJAS ---
-      ctx.lineWidth = 8;
+      // --- 2. RUBOR EN MEJILLAS ---
+      const blushOpacity = lerp(0.8, 0.4, animProgress);
+      ctx.fillStyle = `rgba(255, 105, 135, ${blushOpacity})`;
+      
+      // Mejilla Izquierda
+      ctx.beginPath();
+      ctx.ellipse(cx - 60, cy + 25, 18, 8, -0.1, 0, Math.PI * 2);
+      ctx.fill();
+      
+      // Mejilla Derecha
+      ctx.beginPath();
+      ctx.ellipse(cx + 60, cy + 25, 18, 8, 0.1, 0, Math.PI * 2);
+      ctx.fill();
+
+      // --- 3. CEJAS ANIME ---
+      const eyebrowY = lerp(cy - 40, cy - 50, animProgress);
+      const eyebrowTilt = lerp(22, -5, animProgress);
+
+      ctx.lineWidth = 5;
       ctx.lineCap = 'round';
-      ctx.strokeStyle = '#2c3e50';
-
-      // Ángulo de las cejas (Inclinadas cuando está molesto, neutras cuando está feliz)
-      const eyebrowTilt = lerp(20, -5, animProgress);
-      const eyebrowY = lerp(centerY - 50, centerY - 60, animProgress);
+      ctx.strokeStyle = '#2d1e18';
 
       // Ceja Izquierda
       ctx.beginPath();
-      ctx.moveTo(centerX - 80, eyebrowY - eyebrowTilt);
-      ctx.lineTo(centerX - 20, eyebrowY + eyebrowTilt);
+      ctx.moveTo(cx - 85, eyebrowY - eyebrowTilt);
+      ctx.lineTo(cx - 25, eyebrowY + eyebrowTilt);
       ctx.stroke();
 
       // Ceja Derecha
       ctx.beginPath();
-      ctx.moveTo(centerX + 20, eyebrowY + eyebrowTilt);
-      ctx.lineTo(centerX + 80, eyebrowY - eyebrowTilt);
+      ctx.moveTo(cx + 25, eyebrowY + eyebrowTilt);
+      ctx.lineTo(cx + 85, eyebrowY - eyebrowTilt);
       ctx.stroke();
 
-      // --- OJOS ---
-      const eyeOffsetY = lerp(centerY - 20, centerY - 25, animProgress);
-      const eyeRadius = lerp(12, 16, animProgress);
-
-      ctx.fillStyle = '#2c3e50';
-      
-      // Ojo Izquierdo
-      ctx.beginPath();
-      ctx.ellipse(centerX - 55, eyeOffsetY, eyeRadius, eyeRadius * eyeScaleY, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Ojo Derecho
-      ctx.beginPath();
-      ctx.ellipse(centerX + 55, eyeOffsetY, eyeRadius, eyeRadius * eyeScaleY, 0, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Brillo en los ojos (Solo si está feliz)
-      if (animProgress > 0.3) {
-        ctx.fillStyle = `rgba(255, 255, 255, ${animProgress})`;
+      // Símbolo de vena de rabia (Estilo Anime cuando está molesto)
+      if (animProgress < 0.3) {
+        ctx.strokeStyle = '#e74c3c';
+        ctx.lineWidth = 4;
+        const vx = cx + 75;
+        const vy = cy - 65;
         ctx.beginPath();
-        ctx.arc(centerX - 58, eyeOffsetY - 5, 4, 0, Math.PI * 2);
-        ctx.arc(centerX + 52, eyeOffsetY - 5, 4, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(vx - 8, vy); ctx.lineTo(vx + 8, vy);
+        ctx.moveTo(vx, vy - 8); ctx.lineTo(vx, vy + 8);
+        ctx.stroke();
       }
 
-      // --- BOCA Y DIENTE MORDIENDO ---
-      const mouthY = centerY + 50;
+      // --- 4. OJOS ANIME ---
+      const eyeY = cy - 5;
+      const eyeWidth = 24;
+      const eyeHeight = lerp(32, 40, animProgress);
+      const irisColor = lerpColor('#e74c3c', '#3498db', animProgress);
+
+      [cx - 50, cx + 50].forEach((ex) => {
+        ctx.save();
+        ctx.translate(ex, eyeY);
+        ctx.scale(1, eyeScaleY);
+
+        // Base del ojo (Blanco)
+        ctx.beginPath();
+        ctx.ellipse(0, 0, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = '#2d1e18';
+        ctx.stroke();
+
+        // Iris
+        ctx.beginPath();
+        ctx.ellipse(0, 2, eyeWidth - 6, eyeHeight - 8, 0, 0, Math.PI * 2);
+        ctx.fillStyle = irisColor;
+        ctx.fill();
+
+        // Pupila
+        ctx.beginPath();
+        ctx.ellipse(0, 4, 7, 12, 0, 0, Math.PI * 2);
+        ctx.fillStyle = '#1a1a24';
+        ctx.fill();
+
+        // Brillos Anime en el ojo
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(-7, -10, 6, 0, Math.PI * 2); // Brillo principal grande
+        ctx.arc(6, 10, 3, 0, Math.PI * 2);   // Brillo secundario
+        ctx.fill();
+
+        // Pestaña superior gruesa (Estilo Anime)
+        ctx.restore();
+        ctx.beginPath();
+        ctx.lineWidth = 6;
+        ctx.strokeStyle = '#2d1e18';
+        ctx.arc(ex, eyeY - eyeHeight * eyeScaleY + 8, eyeWidth + 2, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.stroke();
+      });
+
+      // --- 5. BOCA Y DIENTE MORDIENDO ANIME ---
+      const mouthY = cy + 55;
 
       if (animProgress < 0.5) {
-        // MODO MOLESTO: Boca tensa con labio mordido por un diente
-        const angryMouthWidth = 100;
-        
-        // Labio exterior / Boca
+        // MODO MOLESTO: Boca apretada con colmillo/diente mordiendo labio inferior
+        const shake = Math.sin(time * 30) * 1.5; // Temblor de rabia
+
+        // Fondo boca abierta en tensión
         ctx.beginPath();
-        ctx.moveTo(centerX - angryMouthWidth / 2, mouthY);
-        ctx.quadraticCurveTo(centerX, mouthY - 10, centerX + angryMouthWidth / 2, mouthY + 5);
-        ctx.quadraticCurveTo(centerX, mouthY + 25, centerX - angryMouthWidth / 2, mouthY);
-        ctx.fillStyle = '#922b21';
+        ctx.moveTo(cx - 30 + shake, mouthY);
+        ctx.lineTo(cx + 30 + shake, mouthY + 5);
+        ctx.lineTo(cx + 20 + shake, mouthY + 22);
+        ctx.lineTo(cx - 25 + shake, mouthY + 18);
+        ctx.closePath();
+        ctx.fillStyle = '#7b241c';
         ctx.fill();
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = '#2c3e50';
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#2d1e18';
         ctx.stroke();
 
-        // Diente mordiendo sobre el labio
-        const biteShake = Math.sin(time * 20) * 1; // Leve temblor de rabia
+        // Diente Anime mordiendo labio inferior
+        ctx.beginPath();
+        ctx.moveTo(cx - 10 + shake, mouthY - 1);
+        ctx.lineTo(cx - 2 + shake, mouthY - 1);
+        ctx.lineTo(cx - 6 + shake, mouthY + 14); // Diente afilado
+        ctx.closePath();
         ctx.fillStyle = '#ffffff';
-        ctx.strokeStyle = '#2c3e50';
-        ctx.lineWidth = 2;
-        ctx.beginPath();
-        ctx.roundRect(centerX - 12 + biteShake, mouthY - 6, 20, 18, [2, 2, 5, 5]);
         ctx.fill();
-        ctx.stroke();
-
-        // Línea del labio inferior rodeando el diente
-        ctx.beginPath();
-        ctx.arc(centerX + biteShake, mouthY + 6, 14, 0, Math.PI, false);
         ctx.stroke();
 
       } else {
-        // MODO FELIZ: Sonrisa amplia e interpolada
-        const happyMouthWidth = lerp(80, 120, animProgress);
-        
+        // MODO FELIZ: Sonrisa estilo Anime limpia
         ctx.beginPath();
-        ctx.arc(centerX, mouthY - 10, happyMouthWidth / 2, 0.1 * Math.PI, 0.9 * Math.PI, false);
-        ctx.lineWidth = 8;
-        ctx.strokeStyle = '#2c3e50';
+        ctx.arc(cx, mouthY - 10, 28, 0.15 * Math.PI, 0.85 * Math.PI, false);
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = '#2d1e18';
         ctx.stroke();
       }
+
+      // --- 6. CABELLO ANIME (Flequillo con mechones) ---
+      ctx.fillStyle = '#34495e';
+      ctx.strokeStyle = '#1a252f';
+      ctx.lineWidth = 3;
+
+      // Mechones frontales
+      const hairBangs = [
+        { startX: cx - 110, startY: cy - 60, cpX: cx - 60, cpY: cy - 20, endX: cx - 40, endY: cy - 45 },
+        { startX: cx - 50, startY: cy - 70, cpX: cx - 20, cpY: cy - 10, endX: cx, endY: cy - 50 },
+        { startX: cx - 10, startY: cy - 70, cpX: cx + 30, cpY: cy - 10, endX: cx + 50, endY: cy - 45 },
+        { startX: cx + 40, startY: cy - 60, cpX: cx + 80, cpY: cy - 20, endX: cx + 110, endY: cy - 60 }
+      ];
+
+      hairBangs.forEach(bang => {
+        ctx.beginPath();
+        ctx.moveTo(bang.startX, bang.startY);
+        ctx.quadraticCurveTo(bang.cpX, bang.cpY, bang.endX, bang.endY);
+        ctx.quadraticCurveTo(bang.startX + 20, bang.startY - 30, bang.startX, bang.startY);
+        ctx.fill();
+        ctx.stroke();
+      });
+    }
+
+    // Auxiliar para interpolar colores en formato HEX
+    function lerpColor(a, b, amount) {
+      const ah = parseInt(a.replace('#', ''), 16),
+            bh = parseInt(b.replace('#', ''), 16),
+            ar = ah >> 16, ag = (ah >> 8) & 0xff, ab = ah & 0xff,
+            br = bh >> 16, bg = (bh >> 8) & 0xff, bb = bh & 0xff,
+            rr = Math.round(ar + amount * (br - ar)),
+            rg = Math.round(ag + amount * (bg - ag)),
+            rb = Math.round(ab + amount * (bb - ab));
+      return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb).toString(16).slice(1);
     }
 
     function loop() {
       update();
-      draw();
+      drawAnimeFace();
       requestAnimationFrame(loop);
     }
 
