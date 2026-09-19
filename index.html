@@ -17,13 +17,14 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: #020308;
+      /* Fondo fotográfico real de interior de palacio con tonos cálidos y alegres */
+      background: #fff0d6 url('https://images.unsplash.com/photo-1544833058-e70f6ea25636?q=80&w=1600') no-repeat center center / cover;
       font-family: 'Segoe UI', Roboto, sans-serif;
       overflow: hidden;
       position: relative;
     }
 
-    /* Resplandor holográfico ambiental */
+    /* Capa de brillo e iluminación alegre sobre el palacio real */
     .full-page-glow {
       position: absolute;
       top: 0;
@@ -39,9 +40,9 @@
     .title {
       position: absolute;
       top: 35px;
-      font-size: 3rem;
+      font-size: 3.2rem;
       font-weight: 900;
-      letter-spacing: 10px;
+      letter-spacing: 12px;
       text-transform: uppercase;
       transition: color 0.5s ease, text-shadow 0.5s ease;
       z-index: 10;
@@ -89,7 +90,40 @@
     let blinkTimer = 0;
     let time = 0;
 
-    const particles = Array.from({ length: 60 }, () => ({
+    // Web Audio API para reproducir sonido al ponerse molesto
+    let audioCtx = null;
+
+    function playAngrySound() {
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+
+        // Sonido sintético estilo gruñido/alerta holográfica
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(160, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.35);
+
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.35);
+      } catch (e) {
+        console.log("Audio no habilitado todavía");
+      }
+    }
+
+    const particles = Array.from({ length: 50 }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
       size: Math.random() * 2.5 + 1,
@@ -99,8 +133,15 @@
 
     document.addEventListener('keydown', (e) => {
       const key = e.key.toLowerCase();
-      if (key === 'm') targetState = 'angry';
-      if (key === 'n') targetState = 'happy';
+      if (key === 'm') {
+        if (targetState !== 'angry') {
+          playAngrySound(); // Reproduce sonido al cambiar a molesto
+        }
+        targetState = 'angry';
+      }
+      if (key === 'n') {
+        targetState = 'happy';
+      }
     });
 
     function lerp(start, end, amt) {
@@ -135,112 +176,15 @@
       });
     }
 
-    // --- DIBUJO DEL INTERIOR DEL PALACIO DEL REY AGÜERO ---
-    function drawPalaceBackground(mainHue) {
-      const w = canvas.width;
-      const h = canvas.height;
-      const cx = w / 2;
-
-      // Pared de fondo del palacio
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
-      bgGrad.addColorStop(0, '#0a0814');
-      bgGrad.addColorStop(0.5, '#161226');
-      bgGrad.addColorStop(1, '#05040a');
-      ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, w, h);
-
-      ctx.save();
-      ctx.strokeStyle = `hsla(${mainHue}, 40%, 35%, 0.3)`;
-      ctx.lineWidth = 2;
-
-      // 1. Suelo de mármol en perspectiva (Baldosas reales)
-      const horizon = h * 0.55;
-      ctx.beginPath();
-      for (let x = -w; x <= w * 2; x += 120) {
-        ctx.moveTo(x, h);
-        ctx.lineTo(cx + (x - cx) * 0.15, horizon);
-      }
-      for (let y = horizon; y <= h; y += (y - horizon) * 0.3 + 12) {
-        ctx.moveTo(0, y);
-        ctx.lineTo(w, y);
-      }
-      ctx.stroke();
-
-      // 2. Columnas Reales de Palacio
-      const columnPositions = [cx - 380, cx - 220, cx + 220, cx + 380];
-      columnPositions.forEach(colX => {
-        // Base y fuste
-        ctx.fillStyle = 'rgba(25, 20, 38, 0.8)';
-        ctx.fillRect(colX - 25, 0, 50, horizon + 50);
-        
-        ctx.strokeStyle = `hsla(${mainHue}, 60%, 40%, 0.4)`;
-        ctx.strokeRect(colX - 25, 0, 50, horizon + 50);
-        
-        // Detalles estriados dorados
-        ctx.beginPath();
-        ctx.moveTo(colX - 10, 0); ctx.lineTo(colX - 10, horizon + 50);
-        ctx.moveTo(colX + 10, 0); ctx.lineTo(colX + 10, horizon + 50);
-        ctx.stroke();
-      });
-
-      // 3. Arcos Palaciegos
-      ctx.beginPath();
-      ctx.arc(cx, horizon - 80, 200, Math.PI, 0, false);
-      ctx.arc(cx, horizon - 80, 360, Math.PI, 0, false);
-      ctx.strokeStyle = `hsla(${mainHue}, 70%, 45%, 0.5)`;
-      ctx.lineWidth = 3;
-      ctx.stroke();
-
-      // 4. El Trono Real del Rey Agüero (Fondo central)
-      ctx.fillStyle = '#1c1428';
-      ctx.strokeStyle = `hsla(${mainHue}, 80%, 55%, 0.6)`;
-      ctx.lineWidth = 2;
-      
-      // Respaldo del trono
-      ctx.beginPath();
-      ctx.moveTo(cx - 45, horizon);
-      ctx.lineTo(cx - 45, horizon - 110);
-      ctx.lineTo(cx, horizon - 140); // Cúspide del trono
-      ctx.lineTo(cx + 45, horizon - 110);
-      ctx.lineTo(cx + 45, horizon);
-      ctx.closePath();
-      ctx.fill();
-      ctx.stroke();
-
-      // Asiento
-      ctx.fillRect(cx - 55, horizon - 35, 110, 35);
-      ctx.strokeRect(cx - 55, horizon - 35, 110, 35);
-
-      // 5. Estandartes del Rey Agüero
-      [-1, 1].forEach(side => {
-        const flagX = cx + side * 150;
-        ctx.fillStyle = `hsla(${mainHue}, 70%, 25%, 0.6)`;
-        ctx.beginPath();
-        ctx.moveTo(flagX - 20, horizon - 160);
-        ctx.lineTo(flagX + 20, horizon - 160);
-        ctx.lineTo(flagX + 20, horizon - 50);
-        ctx.lineTo(flagX, horizon - 30);
-        ctx.lineTo(flagX - 20, horizon - 50);
-        ctx.closePath();
-        ctx.fill();
-        ctx.stroke();
-      });
-
-      ctx.restore();
-    }
-
     function drawScene() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const mainHue = lerp(340, 185, animProgress); // Magenta/Rojo para M, Cian para N
+      const mainHue = lerp(345, 185, animProgress); // Rojo/Magenta para M, Cian para N
       const holoColor = `hsl(${mainHue}, 100%, 65%)`;
       const holoGlow = `hsl(${mainHue}, 100%, 50%)`;
 
-      // 1. Fondo Palacio
-      drawPalaceBackground(mainHue);
-
-      // 2. Resplandor holográfico ambiental
-      glowElem.style.background = `radial-gradient(circle at 50% 60%, hsla(${mainHue}, 100%, 45%, 0.3) 0%, hsla(${mainHue}, 100%, 15%, 0.1) 60%, transparent 100%)`;
+      // Resplandor cálido e iluminación ambiental sobre el Palacio Real
+      glowElem.style.background = `radial-gradient(circle at 50% 50%, hsla(${mainHue}, 100%, 50%, 0.25) 0%, rgba(255, 230, 180, 0.15) 50%, transparent 100%)`;
       titleElem.style.color = holoColor;
       titleElem.style.textShadow = `0 0 15px ${holoGlow}, 0 0 30px ${holoGlow}`;
 
@@ -248,16 +192,16 @@
       const cy = canvas.height * 0.38;
       const floatY = Math.sin(time * 2) * 8;
 
-      // 3. Haz de luz holográfico
-      const beamGrad = ctx.createLinearGradient(cx, canvas.height * 0.85, cx, cy - 100);
+      // Haz de luz holográfico
+      const beamGrad = ctx.createLinearGradient(cx, canvas.height * 0.88, cx, cy - 100);
       beamGrad.addColorStop(0, `hsla(${mainHue}, 100%, 50%, 0.45)`);
       beamGrad.addColorStop(0.7, `hsla(${mainHue}, 100%, 50%, 0.12)`);
       beamGrad.addColorStop(1, `hsla(${mainHue}, 100%, 50%, 0.0)`);
 
       ctx.fillStyle = beamGrad;
       ctx.beginPath();
-      ctx.moveTo(cx - 220, canvas.height * 0.85);
-      ctx.lineTo(cx + 220, canvas.height * 0.85);
+      ctx.moveTo(cx - 240, canvas.height * 0.88);
+      ctx.lineTo(cx + 240, canvas.height * 0.88);
       ctx.lineTo(cx + 170, cy - 100);
       ctx.lineTo(cx - 170, cy - 100);
       ctx.closePath();
@@ -265,13 +209,13 @@
 
       // Partículas holográficas
       particles.forEach(p => {
-        ctx.fillStyle = `hsla(${mainHue}, 100%, 75%, ${p.alpha})`;
+        ctx.fillStyle = `hsla(${mainHue}, 100%, 80%, ${p.alpha})`;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
       });
 
-      // 4. PERSONAJE REALISTA HOLOGRÁFICO
+      // PERSONAJE REALISTA HOLOGRÁFICO
       ctx.save();
       ctx.translate(0, floatY);
       ctx.strokeStyle = holoColor;
@@ -281,7 +225,7 @@
 
       const bodyY = cy + 100;
 
-      // -- TORSO REALISTA --
+      // Torso realista
       ctx.beginPath();
       ctx.moveTo(cx - 45, bodyY); ctx.lineTo(cx + 45, bodyY);
       ctx.lineTo(cx + 35, bodyY + 120); ctx.lineTo(cx - 35, bodyY + 120);
@@ -294,7 +238,7 @@
       ctx.moveTo(cx + 15, bodyY); ctx.lineTo(cx + 15, cy + 85);
       ctx.stroke();
 
-      // -- BRAZOS REALISTAS CON ARTICULACIONES --
+      // Brazos realistas
       ctx.beginPath();
       ctx.moveTo(cx - 45, bodyY); ctx.lineTo(cx - 75, bodyY + 65);
       ctx.lineTo(cx - 85, bodyY + 125); ctx.arc(cx - 87, bodyY + 128, 5, 0, Math.PI * 2);
@@ -305,7 +249,7 @@
       ctx.lineTo(cx + 85, bodyY + 125); ctx.arc(cx + 87, bodyY + 128, 5, 0, Math.PI * 2);
       ctx.stroke();
 
-      // -- PIERNAS REALISTAS --
+      // Piernas realistas
       ctx.beginPath();
       ctx.moveTo(cx - 25, bodyY + 120); ctx.lineTo(cx - 30, bodyY + 200); ctx.lineTo(cx - 32, bodyY + 280);
       ctx.stroke();
@@ -314,7 +258,7 @@
       ctx.moveTo(cx + 25, bodyY + 120); ctx.lineTo(cx + 30, bodyY + 200); ctx.lineTo(cx + 32, bodyY + 280);
       ctx.stroke();
 
-      // -- CABEZA ANATÓMICA PROPORCIONAL --
+      // Cabeza anatómica
       ctx.beginPath();
       ctx.moveTo(cx - 60, cy - 30);
       ctx.quadraticCurveTo(cx - 65, cy + 40, cx - 25, cy + 80);
@@ -339,7 +283,7 @@
       ctx.moveTo(cx + 15, eyebrowY + eyebrowTilt); ctx.lineTo(cx + 50, eyebrowY - eyebrowTilt);
       ctx.stroke();
 
-      // -- OJOS ANIME CONSERVADOS --
+      // Ojos anime conservados
       const eyeY = cy - 2;
       const eyeWidth = 20;
       const eyeHeight = lerp(28, 36, animProgress);
@@ -378,7 +322,7 @@
         ctx.stroke();
       });
 
-      // -- BOCA Y DIENTE MORDIENDO --
+      // Boca y diente mordiendo
       const mouthY = cy + 45;
 
       if (animProgress < 0.5) {
@@ -410,7 +354,7 @@
       ctx.restore();
 
       // Líneas de escaneo holográficas
-      ctx.fillStyle = `rgba(0, 0, 0, 0.18)`;
+      ctx.fillStyle = `rgba(0, 0, 0, 0.12)`;
       for (let i = 0; i < canvas.height; i += 4) {
         ctx.fillRect(0, i, canvas.width, 2);
       }
