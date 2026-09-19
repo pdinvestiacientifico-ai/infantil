@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Palacio del Rey Agüero - Homenaje</title>
+  <title>Palacio del Rey Agüero - Súper Holograma</title>
   <style>
     * {
       box-sizing: border-box;
@@ -11,19 +11,16 @@
       padding: 0;
     }
 
-    body {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      background: #020308;
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      background: transparent !important;
       font-family: 'Segoe UI', Roboto, sans-serif;
       overflow: hidden;
       position: relative;
     }
 
-    /* Resplandor holográfico ambiental */
+    /* Resplandor holográfico ambiental transparente en toda la pantalla */
     .full-page-glow {
       position: absolute;
       top: 0;
@@ -31,20 +28,24 @@
       width: 100vw;
       height: 100vh;
       pointer-events: none;
-      transition: background 0.5s ease;
+      transition: background 0.4s ease;
       z-index: 2;
+      mix-blend-mode: screen;
     }
 
-    /* Texto Único: HOMENAJE */
+    /* Título Súper Holográfico */
     .title {
       position: absolute;
-      top: 35px;
-      font-size: 3rem;
+      top: 30px;
+      width: 100%;
+      text-align: center;
+      font-size: 3.5rem;
       font-weight: 900;
-      letter-spacing: 10px;
+      letter-spacing: 12px;
       text-transform: uppercase;
-      transition: color 0.5s ease, text-shadow 0.5s ease;
+      transition: color 0.4s ease, text-shadow 0.4s ease;
       z-index: 10;
+      pointer-events: none;
     }
 
     #canvas-container {
@@ -58,6 +59,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      background: transparent;
     }
   </style>
 </head>
@@ -76,14 +78,6 @@
     const glowElem = document.getElementById('glow');
     const titleElem = document.getElementById('title');
 
-    // Carga de la fotografía real de castillo exterior
-    const bgImage = new Image();
-    let bgLoaded = false;
-    bgImage.src = 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1920&q=80';
-    bgImage.onload = () => {
-      bgLoaded = true;
-    };
-
     function resizeCanvas() {
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight;
@@ -97,11 +91,14 @@
     let blinkTimer = 0;
     let time = 0;
 
-    const particles = Array.from({ length: 60 }, () => ({
+    // Partículas holográficas para llenar toda la pantalla
+    const particleCount = 120;
+    const particles = Array.from({ length: particleCount }, () => ({
       x: Math.random() * window.innerWidth,
       y: Math.random() * window.innerHeight,
-      size: Math.random() * 2.5 + 1,
-      speedY: Math.random() * 1.2 + 0.4,
+      size: Math.random() * 3 + 1,
+      speedY: Math.random() * 1.8 + 0.5,
+      speedX: (Math.random() - 0.5) * 0.8,
       alpha: Math.random()
     }));
 
@@ -136,95 +133,65 @@
 
       particles.forEach(p => {
         p.y -= p.speedY;
+        p.x += p.speedX;
         if (p.y < 0) {
           p.y = canvas.height;
           p.x = Math.random() * canvas.width;
         }
+        if (p.x < 0) p.x = canvas.width;
+        if (p.x > canvas.width) p.x = 0;
       });
     }
 
-    // Renderizado responsivo del fondo fotográfico
-    function drawCastleImageBackground() {
-      const w = canvas.width;
-      const h = canvas.height;
-
-      if (bgLoaded) {
-        const imgRatio = bgImage.width / bgImage.height;
-        const canvasRatio = w / h;
-        let renderWidth, renderHeight, offsetX, offsetY;
-
-        if (canvasRatio > imgRatio) {
-          renderWidth = w;
-          renderHeight = w / imgRatio;
-          offsetX = 0;
-          offsetY = (h - renderHeight) / 2;
-        } else {
-          renderWidth = h * imgRatio;
-          renderHeight = h;
-          offsetX = (w - renderWidth) / 2;
-          offsetY = 0;
-        }
-
-        ctx.drawImage(bgImage, offsetX, offsetY, renderWidth, renderHeight);
-
-        // Capa ambiental para oscurecer ligeramente y resaltar el holograma
-        ctx.fillStyle = 'rgba(5, 4, 10, 0.35)';
-        ctx.fillRect(0, 0, w, h);
-      } else {
-        ctx.fillStyle = '#0a0814';
-        ctx.fillRect(0, 0, w, h);
-      }
-    }
-
     function drawScene() {
+      // Limpieza total del lienzo para asegurar fondo 100% transparente
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       const mainHue = lerp(340, 185, animProgress);
       const holoColor = `hsl(${mainHue}, 100%, 65%)`;
       const holoGlow = `hsl(${mainHue}, 100%, 50%)`;
 
-      // 1. Fotografía de fondo de castillo real
-      drawCastleImageBackground();
-
-      // 2. Resplandor holográfico ambiental
-      glowElem.style.background = `radial-gradient(circle at 50% 60%, hsla(${mainHue}, 100%, 45%, 0.25) 0%, hsla(${mainHue}, 100%, 15%, 0.1) 60%, transparent 100%)`;
+      // Resplandor difuso ambiental en los bordes de la pantalla
+      glowElem.style.background = `radial-gradient(circle at 50% 50%, hsla(${mainHue}, 100%, 50%, 0.18) 0%, hsla(${mainHue}, 100%, 30%, 0.05) 70%, transparent 100%)`;
       titleElem.style.color = holoColor;
-      titleElem.style.textShadow = `0 0 15px ${holoGlow}, 0 0 30px ${holoGlow}`;
+      titleElem.style.textShadow = `0 0 20px ${holoGlow}, 0 0 40px ${holoGlow}, 0 0 60px ${holoGlow}`;
 
       const cx = canvas.width / 2;
       const cy = canvas.height * 0.38;
-      const floatY = Math.sin(time * 2) * 8;
+      const floatY = Math.sin(time * 2) * 10;
 
-      // 3. Haz de luz holográfico
-      const beamGrad = ctx.createLinearGradient(cx, canvas.height * 0.85, cx, cy - 100);
-      beamGrad.addColorStop(0, `hsla(${mainHue}, 100%, 50%, 0.4)`);
-      beamGrad.addColorStop(0.7, `hsla(${mainHue}, 100%, 50%, 0.1)`);
+      // 1. Haz de Luz Holográfico Gigante (Proyector Base)
+      const beamGrad = ctx.createLinearGradient(cx, canvas.height, cx, cy - 120);
+      beamGrad.addColorStop(0, `hsla(${mainHue}, 100%, 55%, 0.45)`);
+      beamGrad.addColorStop(0.5, `hsla(${mainHue}, 100%, 50%, 0.15)`);
       beamGrad.addColorStop(1, `hsla(${mainHue}, 100%, 50%, 0.0)`);
 
       ctx.fillStyle = beamGrad;
       ctx.beginPath();
-      ctx.moveTo(cx - 220, canvas.height * 0.85);
-      ctx.lineTo(cx + 220, canvas.height * 0.85);
-      ctx.lineTo(cx + 170, cy - 100);
-      ctx.lineTo(cx - 170, cy - 100);
+      ctx.moveTo(cx - 380, canvas.height);
+      ctx.lineTo(cx + 380, canvas.height);
+      ctx.lineTo(cx + 200, cy - 120);
+      ctx.lineTo(cx - 200, cy - 120);
       ctx.closePath();
       ctx.fill();
 
-      // Partículas holográficas
+      // 2. Partículas Holográficas Ambientalizadas
       particles.forEach(p => {
         ctx.fillStyle = `hsla(${mainHue}, 100%, 75%, ${p.alpha})`;
+        ctx.shadowColor = holoGlow;
+        ctx.shadowBlur = 8;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();
       });
 
-      // 4. Personaje Holográfico
+      // 3. Renderizado de la Entidad Holográfica
       ctx.save();
       ctx.translate(0, floatY);
       ctx.strokeStyle = holoColor;
       ctx.shadowColor = holoGlow;
-      ctx.shadowBlur = 18;
-      ctx.lineWidth = 2.5;
+      ctx.shadowBlur = 25;
+      ctx.lineWidth = 3;
 
       const bodyY = cy + 100;
 
@@ -280,13 +247,13 @@
       // Cejas
       const eyebrowY = lerp(cy - 25, cy - 35, animProgress);
       const eyebrowTilt = lerp(20, -5, animProgress);
-      ctx.lineWidth = 3.5;
+      ctx.lineWidth = 4;
       ctx.beginPath();
       ctx.moveTo(cx - 50, eyebrowY - eyebrowTilt); ctx.lineTo(cx - 15, eyebrowY + eyebrowTilt);
       ctx.moveTo(cx + 15, eyebrowY + eyebrowTilt); ctx.lineTo(cx + 50, eyebrowY - eyebrowTilt);
       ctx.stroke();
 
-      // Ojos Anime
+      // Ojos
       const eyeY = cy - 2;
       const eyeWidth = 20;
       const eyeHeight = lerp(28, 36, animProgress);
@@ -299,7 +266,7 @@
         ctx.beginPath();
         ctx.ellipse(0, 0, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
         ctx.strokeStyle = holoColor;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 2.5;
         ctx.stroke();
 
         ctx.beginPath();
@@ -327,7 +294,6 @@
 
       // Boca
       const mouthY = cy + 45;
-
       if (animProgress < 0.5) {
         const shake = Math.sin(time * 30) * 1.5;
 
@@ -350,16 +316,26 @@
       } else {
         ctx.beginPath();
         ctx.arc(cx, mouthY - 5, 18, 0.2 * Math.PI, 0.8 * Math.PI, false);
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 3.5;
         ctx.stroke();
       }
 
       ctx.restore();
 
-      // Líneas de escaneo holográficas
-      ctx.fillStyle = `rgba(0, 0, 0, 0.12)`;
-      for (let i = 0; i < canvas.height; i += 4) {
-        ctx.fillRect(0, i, canvas.width, 2);
+      // 4. Efectos de Líneas de Escaneo e Interferencia Súper Holográfica
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = `rgba(0, 255, 255, 0.04)`;
+      for (let i = 0; i < canvas.height; i += 3) {
+        ctx.fillRect(0, i, canvas.width, 1);
+      }
+
+      // Desplazamiento aleatorio tipo Glitch de pantalla holográfica
+      if (Math.random() < 0.12) {
+        const glitchY = Math.random() * canvas.height;
+        const glitchHeight = Math.random() * 15 + 2;
+        const glitchOffset = (Math.random() - 0.5) * 20;
+        ctx.fillStyle = `hsla(${mainHue}, 100%, 70%, 0.15)`;
+        ctx.fillRect(glitchOffset, glitchY, canvas.width, glitchHeight);
       }
     }
 
