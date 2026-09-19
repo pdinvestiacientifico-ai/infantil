@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Personaje Anime Interactivo</title>
+  <title>Holograma Chibi Interactivo</title>
   <style>
     * {
       box-sizing: border-box;
@@ -17,9 +17,9 @@
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      background: radial-gradient(circle at center, #2b213a 0%, #110e18 100%);
+      background: #030712;
       font-family: 'Segoe UI', Roboto, sans-serif;
-      color: #ffffff;
+      color: #00f0ff;
       overflow: hidden;
     }
 
@@ -27,27 +27,28 @@
       margin-bottom: 20px;
       font-size: 1.1rem;
       text-align: center;
-      background: rgba(255, 255, 255, 0.07);
+      background: rgba(0, 240, 255, 0.05);
       padding: 12px 24px;
       border-radius: 12px;
       backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      text-shadow: 0 0 5px #00f0ff;
     }
 
     .key {
-      background: #ff79c6;
-      color: #110e18;
+      background: #00f0ff;
+      color: #030712;
       padding: 4px 10px;
       border-radius: 6px;
       font-weight: bold;
-      box-shadow: 0 2px 5px rgba(255, 121, 198, 0.4);
+      box-shadow: 0 0 10px #00f0ff;
     }
 
     #canvas-container {
       position: relative;
-      width: 420px;
-      height: 420px;
+      width: 500px;
+      height: 550px;
     }
 
     canvas {
@@ -59,16 +60,16 @@
 <body>
 
   <div class="instructions">
-    Presiona <span class="key">M</span> para modo Anime Molesto (mordiendo el diente) <br><br>
-    Presiona <span class="key">N</span> para modo Anime Feliz
+    Presiona <span class="key">M</span> para Holograma Chibi Molesto <br><br>
+    Presiona <span class="key">N</span> para Holograma Chibi Feliz
   </div>
 
   <div id="canvas-container">
-    <canvas id="animeCanvas" width="500" height="500"></canvas>
+    <canvas id="holoCanvas" width="500" height="550"></canvas>
   </div>
 
   <script>
-    const canvas = document.getElementById('animeCanvas');
+    const canvas = document.getElementById('holoCanvas');
     const ctx = canvas.getContext('2d');
 
     let targetState = 'happy';
@@ -90,7 +91,6 @@
     function update() {
       time += 0.04;
 
-      // Transición fluida
       if (targetState === 'happy' && animProgress < 1) {
         animProgress += 0.08;
         if (animProgress > 1) animProgress = 1;
@@ -99,7 +99,7 @@
         if (animProgress < 0) animProgress = 0;
       }
 
-      // Sistema de parpadeo
+      // Parpadeo
       blinkTimer += 0.025;
       if (blinkTimer > 3) {
         eyeScaleY = Math.abs(Math.sin(blinkTimer * 12));
@@ -109,200 +109,197 @@
       }
     }
 
-    function drawAnimeFace() {
+    function drawHologram() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+      // Color dinámico de holograma (Cian para feliz, Magenta/Rojo para molesto)
+      const mainHue = lerp(0, 180, animProgress); // 0 = Rojo/Rosa, 180 = Cian
+      const holoColor = `hsl(${mainHue}, 100%, 60%)`;
+      const holoGlow = `hsl(${mainHue}, 100%, 50%)`;
+
       const cx = canvas.width / 2;
-      const cy = canvas.height / 2 + 10;
-      const headBreath = Math.sin(time * 2) * 2;
+      const cy = 200;
+      const floatY = Math.sin(time * 2.5) * 6; // Flotación holográfica
 
-      // --- 1. CABEZA Y ROSTRO (Forma Anime Barbilla Afilada) ---
+      // --- 1. PROYECTOR BASE Y LUZ ---
+      ctx.save();
+      ctx.strokeStyle = holoColor;
+      ctx.shadowColor = holoGlow;
+      ctx.shadowBlur = 15;
+      ctx.lineWidth = 2;
+
+      // Haz de luz holográfica
+      const lightGrad = ctx.createLinearGradient(cx, 480, cx, 100);
+      lightGrad.addColorStop(0, `hsla(${mainHue}, 100%, 50%, 0.4)`);
+      lightGrad.addColorStop(1, `hsla(${mainHue}, 100%, 50%, 0.0)`);
+      ctx.fillStyle = lightGrad;
       ctx.beginPath();
-      ctx.moveTo(cx - 100, cy - 80);
-      ctx.quadraticCurveTo(cx - 105, cy + 30, cx - 40, cy + 110 + headBreath);
-      ctx.lineTo(cx, cy + 130 + headBreath); // Mentón afilado
-      ctx.lineTo(cx + 40, cy + 110 + headBreath);
-      ctx.quadraticCurveTo(cx + 105, cy + 30, cx + 100, cy - 80);
+      ctx.moveTo(cx - 140, 480);
+      ctx.lineTo(cx + 140, 480);
+      ctx.lineTo(cx + 180, 100);
+      ctx.lineTo(cx - 180, 100);
       ctx.closePath();
-
-      // Sombra y piel
-      ctx.fillStyle = '#ffebd9';
       ctx.fill();
+
+      // Elipse base del proyector
+      ctx.beginPath();
+      ctx.ellipse(cx, 480, 140, 30, 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(0, floatY);
+      ctx.strokeStyle = holoColor;
+      ctx.shadowColor = holoGlow;
+      ctx.shadowBlur = 12;
       ctx.lineWidth = 3;
-      ctx.strokeStyle = '#4a3b32';
+
+      // --- 2. CUERPO INFANTIL (CHIBI: Brazos y Piernas) ---
+      const bodyY = cy + 90;
+
+      // Tronco Chibi
+      ctx.beginPath();
+      ctx.roundRect(cx - 30, bodyY, 60, 65, 15);
       ctx.stroke();
 
-      // --- 2. RUBOR EN MEJILLAS ---
-      const blushOpacity = lerp(0.8, 0.4, animProgress);
-      ctx.fillStyle = `rgba(255, 105, 135, ${blushOpacity})`;
-      
-      // Mejilla Izquierda
+      // Brazos
+      const armAngle = lerp(0.3, -0.2, animProgress);
+      // Brazo Izquierdo
       ctx.beginPath();
-      ctx.ellipse(cx - 60, cy + 25, 18, 8, -0.1, 0, Math.PI * 2);
-      ctx.fill();
-      
-      // Mejilla Derecha
-      ctx.beginPath();
-      ctx.ellipse(cx + 60, cy + 25, 18, 8, 0.1, 0, Math.PI * 2);
-      ctx.fill();
-
-      // --- 3. CEJAS ANIME ---
-      const eyebrowY = lerp(cy - 40, cy - 50, animProgress);
-      const eyebrowTilt = lerp(22, -5, animProgress);
-
-      ctx.lineWidth = 5;
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = '#2d1e18';
-
-      // Ceja Izquierda
-      ctx.beginPath();
-      ctx.moveTo(cx - 85, eyebrowY - eyebrowTilt);
-      ctx.lineTo(cx - 25, eyebrowY + eyebrowTilt);
+      ctx.moveTo(cx - 30, bodyY + 10);
+      ctx.lineTo(cx - 55, bodyY + 35 + Math.sin(time * 3) * 3);
+      ctx.arc(cx - 57, bodyY + 37, 6, 0, Math.PI * 2); // Mano redondeada
       ctx.stroke();
 
-      // Ceja Derecha
+      // Brazo Derecho
       ctx.beginPath();
-      ctx.moveTo(cx + 25, eyebrowY + eyebrowTilt);
-      ctx.lineTo(cx + 85, eyebrowY - eyebrowTilt);
+      ctx.moveTo(cx + 30, bodyY + 10);
+      ctx.lineTo(cx + 55, bodyY + 35 - Math.sin(time * 3) * 3);
+      ctx.arc(cx + 57, bodyY + 37, 6, 0, Math.PI * 2);
       ctx.stroke();
 
-      // Símbolo de vena de rabia (Estilo Anime cuando está molesto)
-      if (animProgress < 0.3) {
-        ctx.strokeStyle = '#e74c3c';
-        ctx.lineWidth = 4;
-        const vx = cx + 75;
-        const vy = cy - 65;
-        ctx.beginPath();
-        ctx.moveTo(vx - 8, vy); ctx.lineTo(vx + 8, vy);
-        ctx.moveTo(vx, vy - 8); ctx.lineTo(vx, vy + 8);
-        ctx.stroke();
-      }
+      // Piernas Chibi cortas
+      ctx.beginPath();
+      ctx.moveTo(cx - 15, bodyY + 65);
+      ctx.lineTo(cx - 18, bodyY + 95);
+      ctx.arc(cx - 20, bodyY + 97, 7, 0, Math.PI * 2); // Pie
+      ctx.stroke();
 
-      // --- 4. OJOS ANIME ---
+      ctx.beginPath();
+      ctx.moveTo(cx + 15, bodyY + 65);
+      ctx.lineTo(cx + 18, bodyY + 95);
+      ctx.arc(cx + 20, bodyY + 97, 7, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // --- 3. CABEZA INFANTIL GRANDOTA (Chibi redonda) ---
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, 95, 85, 0, 0, Math.PI * 2); // Forma de mejillas infladas
+      ctx.stroke();
+
+      // Cabello Holográfico
+      ctx.beginPath();
+      ctx.moveTo(cx - 90, cy - 20);
+      ctx.quadraticCurveTo(cx - 40, cy - 90, cx, cy - 60);
+      ctx.quadraticCurveTo(cx + 40, cy - 90, cx + 90, cy - 20);
+      ctx.stroke();
+
+      // Cejas
+      const eyebrowY = lerp(cy - 35, cy - 45, animProgress);
+      const eyebrowTilt = lerp(18, -4, animProgress);
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(cx - 65, eyebrowY - eyebrowTilt); ctx.lineTo(cx - 20, eyebrowY + eyebrowTilt);
+      ctx.moveTo(cx + 20, eyebrowY + eyebrowTilt); ctx.lineTo(cx + 65, eyebrowY - eyebrowTilt);
+      ctx.stroke();
+
+      // --- 4. OJOS ANIME (CÓDIGO ORIGINAL CONSERVADO Y ADAPTADO) ---
       const eyeY = cy - 5;
-      const eyeWidth = 24;
-      const eyeHeight = lerp(32, 40, animProgress);
-      const irisColor = lerpColor('#e74c3c', '#3498db', animProgress);
+      const eyeWidth = 22;
+      const eyeHeight = lerp(30, 38, animProgress);
 
-      [cx - 50, cx + 50].forEach((ex) => {
+      [cx - 42, cx + 42].forEach((ex) => {
         ctx.save();
         ctx.translate(ex, eyeY);
         ctx.scale(1, eyeScaleY);
 
-        // Base del ojo (Blanco)
+        // Base del ojo
         ctx.beginPath();
         ctx.ellipse(0, 0, eyeWidth, eyeHeight, 0, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffffff';
-        ctx.fill();
+        ctx.strokeStyle = holoColor;
         ctx.lineWidth = 2;
-        ctx.strokeStyle = '#2d1e18';
         ctx.stroke();
 
         // Iris
         ctx.beginPath();
-        ctx.ellipse(0, 2, eyeWidth - 6, eyeHeight - 8, 0, 0, Math.PI * 2);
-        ctx.fillStyle = irisColor;
-        ctx.fill();
+        ctx.ellipse(0, 2, eyeWidth - 5, eyeHeight - 7, 0, 0, Math.PI * 2);
+        ctx.stroke();
 
         // Pupila
         ctx.beginPath();
-        ctx.ellipse(0, 4, 7, 12, 0, 0, Math.PI * 2);
-        ctx.fillStyle = '#1a1a24';
+        ctx.ellipse(0, 4, 6, 10, 0, 0, Math.PI * 2);
+        ctx.fillStyle = holoColor;
         ctx.fill();
 
-        // Brillos Anime en el ojo
+        // Brillos Anime
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(-7, -10, 6, 0, Math.PI * 2); // Brillo principal grande
-        ctx.arc(6, 10, 3, 0, Math.PI * 2);   // Brillo secundario
+        ctx.arc(-6, -8, 5, 0, Math.PI * 2);
+        ctx.arc(5, 8, 2.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // Pestaña superior gruesa (Estilo Anime)
         ctx.restore();
+
+        // Pestaña superior
         ctx.beginPath();
-        ctx.lineWidth = 6;
-        ctx.strokeStyle = '#2d1e18';
-        ctx.arc(ex, eyeY - eyeHeight * eyeScaleY + 8, eyeWidth + 2, Math.PI * 1.1, Math.PI * 1.9);
+        ctx.lineWidth = 4;
+        ctx.arc(ex, eyeY - eyeHeight * eyeScaleY + 6, eyeWidth + 2, Math.PI * 1.1, Math.PI * 1.9);
         ctx.stroke();
       });
 
-      // --- 5. BOCA Y DIENTE MORDIENDO ANIME ---
-      const mouthY = cy + 55;
+      // --- 5. BOCA Y DIENTE MORDIENDO ---
+      const mouthY = cy + 42;
 
       if (animProgress < 0.5) {
-        // MODO MOLESTO: Boca apretada con colmillo/diente mordiendo labio inferior
-        const shake = Math.sin(time * 30) * 1.5; // Temblor de rabia
+        // MODO MOLESTO: Boca apretada con diente afilado
+        const shake = Math.sin(time * 30) * 1.5;
 
-        // Fondo boca abierta en tensión
         ctx.beginPath();
-        ctx.moveTo(cx - 30 + shake, mouthY);
-        ctx.lineTo(cx + 30 + shake, mouthY + 5);
-        ctx.lineTo(cx + 20 + shake, mouthY + 22);
-        ctx.lineTo(cx - 25 + shake, mouthY + 18);
+        ctx.moveTo(cx - 25 + shake, mouthY);
+        ctx.lineTo(cx + 25 + shake, mouthY + 3);
+        ctx.lineTo(cx + 15 + shake, mouthY + 16);
+        ctx.lineTo(cx - 20 + shake, mouthY + 14);
         ctx.closePath();
-        ctx.fillStyle = '#7b241c';
-        ctx.fill();
-        ctx.lineWidth = 3;
-        ctx.strokeStyle = '#2d1e18';
         ctx.stroke();
 
-        // Diente Anime mordiendo labio inferior
+        // Diente Anime mordiendo el labio
         ctx.beginPath();
-        ctx.moveTo(cx - 10 + shake, mouthY - 1);
-        ctx.lineTo(cx - 2 + shake, mouthY - 1);
-        ctx.lineTo(cx - 6 + shake, mouthY + 14); // Diente afilado
+        ctx.moveTo(cx - 8 + shake, mouthY);
+        ctx.lineTo(cx - 1 + shake, mouthY);
+        ctx.lineTo(cx - 4 + shake, mouthY + 11);
         ctx.closePath();
         ctx.fillStyle = '#ffffff';
         ctx.fill();
         ctx.stroke();
-
       } else {
-        // MODO FELIZ: Sonrisa estilo Anime limpia
+        // MODO FELIZ: Sonrisa Chibi pequeña y tierna
         ctx.beginPath();
-        ctx.arc(cx, mouthY - 10, 28, 0.15 * Math.PI, 0.85 * Math.PI, false);
-        ctx.lineWidth = 4;
-        ctx.strokeStyle = '#2d1e18';
+        ctx.arc(cx, mouthY - 5, 20, 0.2 * Math.PI, 0.8 * Math.PI, false);
+        ctx.lineWidth = 3.5;
         ctx.stroke();
       }
 
-      // --- 6. CABELLO ANIME (Flequillo con mechones) ---
-      ctx.fillStyle = '#34495e';
-      ctx.strokeStyle = '#1a252f';
-      ctx.lineWidth = 3;
+      ctx.restore();
 
-      // Mechones frontales
-      const hairBangs = [
-        { startX: cx - 110, startY: cy - 60, cpX: cx - 60, cpY: cy - 20, endX: cx - 40, endY: cy - 45 },
-        { startX: cx - 50, startY: cy - 70, cpX: cx - 20, cpY: cy - 10, endX: cx, endY: cy - 50 },
-        { startX: cx - 10, startY: cy - 70, cpX: cx + 30, cpY: cy - 10, endX: cx + 50, endY: cy - 45 },
-        { startX: cx + 40, startY: cy - 60, cpX: cx + 80, cpY: cy - 20, endX: cx + 110, endY: cy - 60 }
-      ];
-
-      hairBangs.forEach(bang => {
-        ctx.beginPath();
-        ctx.moveTo(bang.startX, bang.startY);
-        ctx.quadraticCurveTo(bang.cpX, bang.cpY, bang.endX, bang.endY);
-        ctx.quadraticCurveTo(bang.startX + 20, bang.startY - 30, bang.startX, bang.startY);
-        ctx.fill();
-        ctx.stroke();
-      });
-    }
-
-    // Auxiliar para interpolar colores en formato HEX
-    function lerpColor(a, b, amount) {
-      const ah = parseInt(a.replace('#', ''), 16),
-            bh = parseInt(b.replace('#', ''), 16),
-            ar = ah >> 16, ag = (ah >> 8) & 0xff, ab = ah & 0xff,
-            br = bh >> 16, bg = (bh >> 8) & 0xff, bb = bh & 0xff,
-            rr = Math.round(ar + amount * (br - ar)),
-            rg = Math.round(ag + amount * (bg - ag)),
-            rb = Math.round(ab + amount * (bb - ab));
-      return '#' + ((1 << 24) + (rr << 16) + (rg << 8) + rb).toString(16).slice(1);
+      // --- 6. EFECTO LINEAS DE ESCANEO HOLOGRÁFICAS ---
+      ctx.fillStyle = `rgba(0, 0, 0, 0.15)`;
+      for (let i = 0; i < canvas.height; i += 4) {
+        ctx.fillRect(0, i, canvas.width, 2);
+      }
     }
 
     function loop() {
       update();
-      drawAnimeFace();
+      drawHologram();
       requestAnimationFrame(loop);
     }
 
