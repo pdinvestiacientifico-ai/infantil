@@ -76,10 +76,10 @@
     const glowElem = document.getElementById('glow');
     const titleElem = document.getElementById('title');
 
-    // Carga de la imagen de fondo (Interior del castillo)
+    // Carga de la fotografía real de castillo exterior
     const bgImage = new Image();
     let bgLoaded = false;
-    bgImage.src = 'https://images.unsplash.com/photo-1541512416146-3cf58d6b27cc?auto=format&fit=crop&w=1920&q=80';
+    bgImage.src = 'https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=1920&q=80';
     bgImage.onload = () => {
       bgLoaded = true;
     };
@@ -143,13 +143,12 @@
       });
     }
 
-    // Dibujo del fondo utilizando la fotografía
+    // Renderizado responsivo del fondo fotográfico
     function drawCastleImageBackground() {
       const w = canvas.width;
       const h = canvas.height;
 
       if (bgLoaded) {
-        // Escalar la imagen manteniendo proporciones (cover)
         const imgRatio = bgImage.width / bgImage.height;
         const canvasRatio = w / h;
         let renderWidth, renderHeight, offsetX, offsetY;
@@ -168,11 +167,10 @@
 
         ctx.drawImage(bgImage, offsetX, offsetY, renderWidth, renderHeight);
 
-        // Capa oscura ambiental para integrarlo con la holografía
-        ctx.fillStyle = 'rgba(5, 4, 10, 0.65)';
+        // Capa ambiental para oscurecer ligeramente y resaltar el holograma
+        ctx.fillStyle = 'rgba(5, 4, 10, 0.35)';
         ctx.fillRect(0, 0, w, h);
       } else {
-        // Fondo temporal mientras descarga la imagen
         ctx.fillStyle = '#0a0814';
         ctx.fillRect(0, 0, w, h);
       }
@@ -181,15 +179,15 @@
     function drawScene() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const mainHue = lerp(340, 185, animProgress); // Magenta/Rojo para M, Cian para N
+      const mainHue = lerp(340, 185, animProgress);
       const holoColor = `hsl(${mainHue}, 100%, 65%)`;
       const holoGlow = `hsl(${mainHue}, 100%, 50%)`;
 
-      // 1. Fotografía de fondo del Castillo
+      // 1. Fotografía de fondo de castillo real
       drawCastleImageBackground();
 
       // 2. Resplandor holográfico ambiental
-      glowElem.style.background = `radial-gradient(circle at 50% 60%, hsla(${mainHue}, 100%, 45%, 0.35) 0%, hsla(${mainHue}, 100%, 15%, 0.15) 60%, transparent 100%)`;
+      glowElem.style.background = `radial-gradient(circle at 50% 60%, hsla(${mainHue}, 100%, 45%, 0.25) 0%, hsla(${mainHue}, 100%, 15%, 0.1) 60%, transparent 100%)`;
       titleElem.style.color = holoColor;
       titleElem.style.textShadow = `0 0 15px ${holoGlow}, 0 0 30px ${holoGlow}`;
 
@@ -199,8 +197,8 @@
 
       // 3. Haz de luz holográfico
       const beamGrad = ctx.createLinearGradient(cx, canvas.height * 0.85, cx, cy - 100);
-      beamGrad.addColorStop(0, `hsla(${mainHue}, 100%, 50%, 0.45)`);
-      beamGrad.addColorStop(0.7, `hsla(${mainHue}, 100%, 50%, 0.12)`);
+      beamGrad.addColorStop(0, `hsla(${mainHue}, 100%, 50%, 0.4)`);
+      beamGrad.addColorStop(0.7, `hsla(${mainHue}, 100%, 50%, 0.1)`);
       beamGrad.addColorStop(1, `hsla(${mainHue}, 100%, 50%, 0.0)`);
 
       ctx.fillStyle = beamGrad;
@@ -220,7 +218,7 @@
         ctx.fill();
       });
 
-      // 4. PERSONAJE REALISTA HOLOGRÁFICO
+      // 4. Personaje Holográfico
       ctx.save();
       ctx.translate(0, floatY);
       ctx.strokeStyle = holoColor;
@@ -230,7 +228,7 @@
 
       const bodyY = cy + 100;
 
-      // -- TORSO REALISTA --
+      // Torso
       ctx.beginPath();
       ctx.moveTo(cx - 45, bodyY); ctx.lineTo(cx + 45, bodyY);
       ctx.lineTo(cx + 35, bodyY + 120); ctx.lineTo(cx - 35, bodyY + 120);
@@ -243,7 +241,7 @@
       ctx.moveTo(cx + 15, bodyY); ctx.lineTo(cx + 15, cy + 85);
       ctx.stroke();
 
-      // -- BRAZOS REALISTAS CON ARTICULACIONES --
+      // Brazos
       ctx.beginPath();
       ctx.moveTo(cx - 45, bodyY); ctx.lineTo(cx - 75, bodyY + 65);
       ctx.lineTo(cx - 85, bodyY + 125); ctx.arc(cx - 87, bodyY + 128, 5, 0, Math.PI * 2);
@@ -254,7 +252,7 @@
       ctx.lineTo(cx + 85, bodyY + 125); ctx.arc(cx + 87, bodyY + 128, 5, 0, Math.PI * 2);
       ctx.stroke();
 
-      // -- PIERNAS REALISTAS --
+      // Piernas
       ctx.beginPath();
       ctx.moveTo(cx - 25, bodyY + 120); ctx.lineTo(cx - 30, bodyY + 200); ctx.lineTo(cx - 32, bodyY + 280);
       ctx.stroke();
@@ -263,7 +261,7 @@
       ctx.moveTo(cx + 25, bodyY + 120); ctx.lineTo(cx + 30, bodyY + 200); ctx.lineTo(cx + 32, bodyY + 280);
       ctx.stroke();
 
-      // -- CABEZA ANATÓMICA PROPORCIONAL --
+      // Cabeza
       ctx.beginPath();
       ctx.moveTo(cx - 60, cy - 30);
       ctx.quadraticCurveTo(cx - 65, cy + 40, cx - 25, cy + 80);
@@ -288,7 +286,7 @@
       ctx.moveTo(cx + 15, eyebrowY + eyebrowTilt); ctx.lineTo(cx + 50, eyebrowY - eyebrowTilt);
       ctx.stroke();
 
-      // -- OJOS ANIME CONSERVADOS --
+      // Ojos Anime
       const eyeY = cy - 2;
       const eyeWidth = 20;
       const eyeHeight = lerp(28, 36, animProgress);
@@ -327,7 +325,7 @@
         ctx.stroke();
       });
 
-      // -- BOCA Y DIENTE MORDIENDO --
+      // Boca
       const mouthY = cy + 45;
 
       if (animProgress < 0.5) {
@@ -359,7 +357,7 @@
       ctx.restore();
 
       // Líneas de escaneo holográficas
-      ctx.fillStyle = `rgba(0, 0, 0, 0.18)`;
+      ctx.fillStyle = `rgba(0, 0, 0, 0.12)`;
       for (let i = 0; i < canvas.height; i += 4) {
         ctx.fillRect(0, i, canvas.width, 2);
       }
